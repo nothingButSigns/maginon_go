@@ -34,4 +34,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     device.h \
-    lightbulb.h
+    lightbulb.h \
+    maginon.h

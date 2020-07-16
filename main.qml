@@ -6,7 +6,7 @@ Window {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("Light manager")
     Rectangle {
         color: "#2b5876"
         gradient: Gradient {

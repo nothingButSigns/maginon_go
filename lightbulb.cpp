@@ -73,6 +73,23 @@ void Lightbulb::connectToDevice(QString address)
 
 }
 
+void Lightbulb::exploreCharacteristics(quint8 serviceIndex)
+{
+    /* const_cast is necessary here cause 'Services' QList constains pointers to const objects
+     * the const is removed here to call 'discoverDetails()' function which has no 'const' specifier,
+     * so cannot be called for 'const' objects
+     */
+    QLowEnergyService *service = const_cast<QLowEnergyService*>(Services.at(serviceIndex));
+
+    if(service->state() == QLowEnergyService::DiscoveryRequired)
+    {
+        connect(service, &QLowEnergyService::stateChanged, this, &Lightbulb::discoverServiceDetails);
+        service->discoverDetails();
+        return;
+    }
+
+}
+
 void Lightbulb::addDevice(const QBluetoothDeviceInfo &device)
 {
     Device *newDev = new Device(device);
@@ -104,6 +121,7 @@ void Lightbulb::discoveryError()
 void Lightbulb::deviceConnected()
 {
     qDebug() << "Device connected";
+    connectionController->discoverServices();
 
 }
 
@@ -112,14 +130,21 @@ void Lightbulb::deviceDisconnected()
 
 }
 
-void Lightbulb::addService()
+void Lightbulb::addService(const QBluetoothUuid &uuid)
 {
+    const QLowEnergyService *service = connectionController->createServiceObject(uuid);
+    Services.append(service);
+
+    if(service->serviceUuid().toString() == CONTROL_SERVICE)
+        lightbulbService = service;
 
 }
 
 void Lightbulb::serviceDiscoveryFinished()
 {
     qDebug() << "Service discovery finished";
+    for (quint8 i=0; i<Services.size(); i++)
+        exploreCharacteristics(i);
 
 }
 

@@ -2,6 +2,7 @@
 #define LIGHTBULB_H
 
 #include "device.h"
+#include "maginon.h"
 
 #include <QObject>
 #include <QAbstractListModel>
@@ -15,6 +16,7 @@ class Lightbulb: public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariant discoveredDevices READ getDevices NOTIFY devicesDiscovered)
+    Q_PROPERTY(bool onOff READ getOnOff NOTIFY onOffChanged)
 
 public:
     Lightbulb();
@@ -24,10 +26,20 @@ public:
 
     void searchForDevices();
     Q_INVOKABLE void connectToDevice(QString address);
+    void exploreCharacteristics(quint8 serviceIndex);
     void discoverServiceDetails();
+
+    // functions associated with device state and control
+    void getInitialState();
+
+    // functions associated with device state and control Q_PROPERTY
+    bool getOnOff();
 
 Q_SIGNALS:
     void devicesDiscovered();
+
+    // signals associated with device state and control
+    void onOffChanged();
 
 private slots:
     void addDevice(const QBluetoothDeviceInfo &device);
@@ -38,7 +50,7 @@ private slots:
     // slots associated with connection attempt
     void deviceConnected();
     void deviceDisconnected();
-    void addService();
+    void addService(const QBluetoothUuid &uuid);
     void serviceDiscoveryFinished();
     void connectionError();
 
@@ -49,6 +61,9 @@ private:
     QBluetoothDeviceInfo connectedDevice;
     QBluetoothDeviceDiscoveryAgent *discoveryAgent = nullptr;
     QLowEnergyController *connectionController = nullptr;
+
+    QList <const QLowEnergyService *> Services;
+    const QLowEnergyService *lightbulbService = nullptr;
 
 
 };

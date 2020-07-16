@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>LightbulbMenu.qml</file>
+        <file alias="on_off_sign">icons/fontello.ttf</file>
     </qresource>
 </RCC>
