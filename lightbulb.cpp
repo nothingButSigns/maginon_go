@@ -75,10 +75,6 @@ void Lightbulb::connectToDevice(QString address)
 
 void Lightbulb::exploreCharacteristics(quint8 serviceIndex)
 {
-    /* const_cast is necessary here cause 'Services' QList constains pointers to const objects
-     * the const is removed here to call 'discoverDetails()' function which has no 'const' specifier,
-     * so cannot be called for 'const' objects
-     */
     QLowEnergyService *service = const_cast<QLowEnergyService*>(Services.at(serviceIndex));
 
     if(service->state() == QLowEnergyService::DiscoveryRequired)
@@ -87,6 +83,48 @@ void Lightbulb::exploreCharacteristics(quint8 serviceIndex)
         service->discoverDetails();
         return;
     }
+
+    const QList<QLowEnergyCharacteristic> characteristics = service->characteristics();
+
+    for(auto ch :  characteristics)
+    {
+        const QLowEnergyCharacteristic *charPtr = &ch;
+        Characteristics.append(charPtr);
+
+        if(ch.uuid().toString() == CONTROL_CHARACTERISTICS)
+            cCharacteristic = charPtr;
+        else if(ch.uuid().toString() == NOTIFY_CHARACTERISTICS)
+            nCharacteristic = charPtr;
+    }
+}
+
+void Lightbulb::discoverServiceDetails(QLowEnergyService::ServiceState servState)
+{
+    if(servState != QLowEnergyService::ServiceDiscovered)
+        return;
+
+    QLowEnergyService *service = qobject_cast <QLowEnergyService *> (sender());
+
+    if(!service)
+        return;
+
+    const QList <QLowEnergyCharacteristic> characteristics = service->characteristics();
+
+
+    for(auto ch :  characteristics)
+    {
+        const QLowEnergyCharacteristic *charPtr = &ch;
+        Characteristics.append(charPtr);
+
+        if(ch.uuid().toString() == CONTROL_CHARACTERISTICS)
+            cCharacteristic = charPtr;
+        else if(ch.uuid().toString() == NOTIFY_CHARACTERISTICS)
+            nCharacteristic = charPtr;
+    }
+}
+
+bool Lightbulb::getOnOff()
+{
 
 }
 
@@ -145,6 +183,8 @@ void Lightbulb::serviceDiscoveryFinished()
     qDebug() << "Service discovery finished";
     for (quint8 i=0; i<Services.size(); i++)
         exploreCharacteristics(i);
+
+    qDebug() << "Characteristics exploration done";
 
 }
 

@@ -27,7 +27,7 @@ public:
     void searchForDevices();
     Q_INVOKABLE void connectToDevice(QString address);
     void exploreCharacteristics(quint8 serviceIndex);
-    void discoverServiceDetails();
+    void discoverServiceDetails(QLowEnergyService::ServiceState servState);
 
     // functions associated with device state and control
     void getInitialState();
@@ -63,7 +63,10 @@ private:
     QLowEnergyController *connectionController = nullptr;
 
     QList <const QLowEnergyService *> Services;
+    QList <const QLowEnergyCharacteristic *> Characteristics;
     const QLowEnergyService *lightbulbService = nullptr;
+    const QLowEnergyCharacteristic *cCharacteristic = nullptr;
+    const QLowEnergyCharacteristic *nCharacteristic = nullptr;
 
 
 };
