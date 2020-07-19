@@ -27,13 +27,22 @@ public:
     void searchForDevices();
     Q_INVOKABLE void connectToDevice(QString address);
     void exploreCharacteristics(quint8 serviceIndex);
+<<<<<<< Updated upstream
     void discoverServiceDetails();
+=======
+    void discoverServiceDetails(QLowEnergyService::ServiceState servState);
+    void lightbulbDetails(QLowEnergyService::ServiceState servState);
+>>>>>>> Stashed changes
 
     // functions associated with device state and control
     void getInitialState();
 
     // functions associated with device state and control Q_PROPERTY
     bool getOnOff();
+
+public slots:
+    void onOffCHarWritten(const QLowEnergyCharacteristic &info,
+                          const QByteArray &value);
 
 Q_SIGNALS:
     void devicesDiscovered();
@@ -53,6 +62,8 @@ private slots:
     void addService(const QBluetoothUuid &uuid);
     void serviceDiscoveryFinished();
     void connectionError();
+
+
 
 
 

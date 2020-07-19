@@ -67,7 +67,7 @@ void Lightbulb::connectToDevice(QString address)
     connect(connectionController, QOverload<QLowEnergyController::Error>::of(&QLowEnergyController::error),
             this, &Lightbulb::connectionError);
 
-    connectionController->setRemoteAddressType(QLowEnergyController::RandomAddress);
+    connectionController->setRemoteAddressType(QLowEnergyController::PublicAddress);
 
     connectionController->connectToDevice();
 
@@ -81,6 +81,7 @@ void Lightbulb::exploreCharacteristics(quint8 serviceIndex)
      */
     QLowEnergyService *service = const_cast<QLowEnergyService*>(Services.at(serviceIndex));
 
+
     if(service->state() == QLowEnergyService::DiscoveryRequired)
     {
         connect(service, &QLowEnergyService::stateChanged, this, &Lightbulb::discoverServiceDetails);
@@ -88,6 +89,93 @@ void Lightbulb::exploreCharacteristics(quint8 serviceIndex)
         return;
     }
 
+<<<<<<< Updated upstream
+=======
+    QList<QLowEnergyCharacteristic> characteristics = service->characteristics();
+
+    for(auto ch :  characteristics)
+    {
+         QLowEnergyCharacteristic *charPtr = &ch;
+         qDebug() << charPtr->uuid().toString();
+        Characteristics.append(charPtr);
+
+        if(charPtr->uuid().toString() == CONTROL_CHARACTERISTICS)
+            cCharacteristic = charPtr;
+        else if(charPtr->uuid().toString() == NOTIFY_CHARACTERISTICS)
+            nCharacteristic = charPtr;
+
+    }
+}
+
+void Lightbulb::discoverServiceDetails(QLowEnergyService::ServiceState servState)
+{
+    if(servState != QLowEnergyService::ServiceDiscovered)
+        return;
+
+    QLowEnergyService *service = qobject_cast <QLowEnergyService *> (sender());
+
+    if(!service)
+        return;
+
+    QList <QLowEnergyCharacteristic> characteristics = service->characteristics();
+
+
+    for(auto ch :  characteristics)
+    {
+        QLowEnergyCharacteristic *charPtr = &ch;
+        qDebug() << charPtr->uuid().toString();
+        Characteristics.append(charPtr);
+qDebug() << "discovering service details";
+        if(charPtr->uuid().toString() == CONTROL_CHARACTERISTICS)
+            cCharacteristic = charPtr;
+        else if(charPtr->uuid().toString() == NOTIFY_CHARACTERISTICS)
+            nCharacteristic = charPtr;
+
+        }
+}
+
+void Lightbulb::lightbulbDetails(QLowEnergyService::ServiceState servState)
+{
+    if(servState != QLowEnergyService::ServiceDiscovered)
+    {
+        qDebug() << "no ServiceDIscovered";
+        return;
+    }
+
+    qDebug() << "ServiceDIscovered";
+
+    QLowEnergyService *service = qobject_cast <QLowEnergyService *> (sender());
+
+    if(!service)
+        return;
+
+//    QList<QLowEnergyCharacteristic> chars = service->characteristics();
+
+//    for(auto i : chars)
+//        qDebug() << "char uuid: " << i.uuid().toString();
+
+    const QString linkCHar = CONTROL_CHARACTERISTICS;
+    const QBluetoothUuid buuid = QBluetoothUuid(linkCHar);
+
+    const QLowEnergyCharacteristic link = service->characteristic(buuid);
+
+    if(link.isValid())
+    {
+        qDebug() << "link iss valid";
+        qDebug() << link.name();
+        qDebug() << link.uuid().toString();
+        qDebug() << link.handle();
+    }
+
+    else
+        qDebug() << "link is invalid";
+
+}
+
+bool Lightbulb::getOnOff()
+{
+
+>>>>>>> Stashed changes
 }
 
 void Lightbulb::addDevice(const QBluetoothDeviceInfo &device)
@@ -121,18 +209,30 @@ void Lightbulb::discoveryError()
 void Lightbulb::deviceConnected()
 {
     qDebug() << "Device connected";
-    connectionController->discoverServices();
+
+    if(Services.empty())
+        connectionController->discoverServices();
+    else
+    {
+        qDebug() << "services discovered";
+       // qDebug() << cCharacteristic->uuid().toString();
+       // qDebug() << nCharacteristic->uuid().toString();
+
+    }
+
 
 }
 
 void Lightbulb::deviceDisconnected()
 {
-
+    qDebug() << "dev disconnected. Reconnecting..";
+    connectionController->connectToDevice();
 }
 
 void Lightbulb::addService(const QBluetoothUuid &uuid)
 {
-    const QLowEnergyService *service = connectionController->createServiceObject(uuid);
+    QLowEnergyService *service = connectionController->createServiceObject(uuid);
+    qDebug() << "Service uuid: " << uuid.toString();
     Services.append(service);
 
     if(service->serviceUuid().toString() == CONTROL_SERVICE)
@@ -143,13 +243,52 @@ void Lightbulb::addService(const QBluetoothUuid &uuid)
 void Lightbulb::serviceDiscoveryFinished()
 {
     qDebug() << "Service discovery finished";
-    for (quint8 i=0; i<Services.size(); i++)
-        exploreCharacteristics(i);
+     QLowEnergyService * ser = const_cast<QLowEnergyService *>(Services.at(2));
 
+    if(ser->state() == QLowEnergyService::DiscoveryRequired)
+    {
+        connect(ser, &QLowEnergyService::stateChanged, this, &Lightbulb::lightbulbDetails);
+
+        ser->discoverDetails();
+        return;
+    }
+
+    QLowEnergyService * service = const_cast<QLowEnergyService *>(Services.at(3));
+
+<<<<<<< Updated upstream
+=======
+    const QString linkCHar = CONTROL_CHARACTERISTICS;
+    const QBluetoothUuid buuid = QBluetoothUuid(linkCHar);
+
+    const QLowEnergyCharacteristic link = service->characteristic(buuid);
+
+    if(link.isValid())
+    {
+        qDebug() << "link iss valid";
+        qDebug() << link.name();
+        qDebug() << link.uuid().toString();
+        qDebug() << link.handle();
+    }
+
+    else
+        qDebug() << "link is invalid";
+
+
+
+//    connect(lightbulbService, &QLowEnergyService::characteristicWritten, this, &Lightbulb::onOffCHarWritten);
+//    lightbulbService->QLowEnergyService::writeCharacteristic(link, QByteArray::fromHex("aa0afc3a86010a010001280d"));
+
+>>>>>>> Stashed changes
 }
 
 void Lightbulb::connectionError()
 {
     qDebug() << "Connection error";
+
+}
+
+void Lightbulb::onOffCHarWritten(const QLowEnergyCharacteristic &info, const QByteArray &value)
+{
+    qDebug() << "Value written";
 
 }

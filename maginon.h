@@ -23,6 +23,11 @@
 #define NOTIFY_CHARACTERISTICS "{0000fff2-0000-1000-8000-00805f9b34fb}"
 #define CONTROL_SERVICE "{0000fff0-0000-1000-8000-00805f9b34fb}"
 
+////////////////////////
+#define SERVICE_0_CHAR "{00002a05-0000-1000-8000-00805f9b34fb}"
+#define SERVICE_3_CHAR_1 "{f000ffc1-0451-4000-b000-000000000000}"
+////////////////////////
+
 #define ON 			"aa0afc3a86010a010100280d"
 #define OFF			"aa0afc3a86010a010001280d"
 
