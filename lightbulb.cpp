@@ -1,5 +1,7 @@
 #include "lightbulb.h"
 
+
+
 Lightbulb::Lightbulb()
 {
     discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
@@ -67,9 +69,23 @@ void Lightbulb::connectToDevice(QString address)
     connect(connectionController, QOverload<QLowEnergyController::Error>::of(&QLowEnergyController::error),
             this, &Lightbulb::connectionError);
 
-    connectionController->setRemoteAddressType(QLowEnergyController::PublicAddress);
+    connectionController->setRemoteAddressType(QLowEnergyController::RandomAddress);
 
     connectionController->connectToDevice();
+
+}
+
+void Lightbulb::executeCommand(int param)
+{
+    const char* addr = "80:30:DC:05:A9:96";
+    qDebug() << "inside executeCOmmand; PARAM = " << param;
+
+    if(param == 1)
+        writeCharValue(LUM2, HAND_LAMP);
+    else if (param == 2)
+        writeCharValue(MIN_LUM1, HAND_LAMP);
+
+
 
 }
 
@@ -89,8 +105,6 @@ void Lightbulb::exploreCharacteristics(quint8 serviceIndex)
         return;
     }
 
-<<<<<<< Updated upstream
-=======
     QList<QLowEnergyCharacteristic> characteristics = service->characteristics();
 
     for(auto ch :  characteristics)
@@ -172,10 +186,30 @@ void Lightbulb::lightbulbDetails(QLowEnergyService::ServiceState servState)
 
 }
 
+void Lightbulb::createObject(const QBluetoothUuid &uuid)
+{
+    QLowEnergyService *service = connectionController->createServiceObject(uuid);
+
+    if(service->state() == QLowEnergyService::DiscoveryRequired)
+    {
+        connect(service, &QLowEnergyService::stateChanged, this, &Lightbulb::lightbulbDetails);
+
+        service->discoverDetails();
+        return;
+    }
+
+}
+
 bool Lightbulb::getOnOff()
 {
 
->>>>>>> Stashed changes
+}
+
+void Lightbulb::connectToThread()
+{
+    connectThread *newThread = new connectThread();
+    newThread->start();
+
 }
 
 void Lightbulb::addDevice(const QBluetoothDeviceInfo &device)
@@ -221,6 +255,7 @@ void Lightbulb::deviceConnected()
     }
 
 
+
 }
 
 void Lightbulb::deviceDisconnected()
@@ -231,12 +266,18 @@ void Lightbulb::deviceDisconnected()
 
 void Lightbulb::addService(const QBluetoothUuid &uuid)
 {
-    QLowEnergyService *service = connectionController->createServiceObject(uuid);
-    qDebug() << "Service uuid: " << uuid.toString();
+    const QString linkServ = CONTROL_SERVICE;
+    const QBluetoothUuid suuid = QBluetoothUuid(linkServ);
+    QLowEnergyService *service = connectionController->createServiceObject(suuid);
+    qDebug() << "Service uuid: " << suuid.toString();
     Services.append(service);
 
-    if(service->serviceUuid().toString() == CONTROL_SERVICE)
-        lightbulbService = service;
+
+
+
+
+//    if(service->serviceUuid().toString() == CONTROL_SERVICE)
+//        lightbulbService = service;
 
 }
 
@@ -244,6 +285,8 @@ void Lightbulb::serviceDiscoveryFinished()
 {
     qDebug() << "Service discovery finished";
      QLowEnergyService * ser = const_cast<QLowEnergyService *>(Services.at(2));
+
+
 
     if(ser->state() == QLowEnergyService::DiscoveryRequired)
     {
@@ -253,32 +296,20 @@ void Lightbulb::serviceDiscoveryFinished()
         return;
     }
 
-    QLowEnergyService * service = const_cast<QLowEnergyService *>(Services.at(3));
-
-<<<<<<< Updated upstream
-=======
+    QLowEnergyCharacteristicData charData;
     const QString linkCHar = CONTROL_CHARACTERISTICS;
     const QBluetoothUuid buuid = QBluetoothUuid(linkCHar);
 
+   QLowEnergyService * service = const_cast<QLowEnergyService *>(Services.at(3));
+
+
     const QLowEnergyCharacteristic link = service->characteristic(buuid);
-
-    if(link.isValid())
-    {
-        qDebug() << "link iss valid";
-        qDebug() << link.name();
-        qDebug() << link.uuid().toString();
-        qDebug() << link.handle();
-    }
-
-    else
-        qDebug() << "link is invalid";
 
 
 
 //    connect(lightbulbService, &QLowEnergyService::characteristicWritten, this, &Lightbulb::onOffCHarWritten);
 //    lightbulbService->QLowEnergyService::writeCharacteristic(link, QByteArray::fromHex("aa0afc3a86010a010001280d"));
 
->>>>>>> Stashed changes
 }
 
 void Lightbulb::connectionError()

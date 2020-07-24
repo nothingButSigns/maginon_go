@@ -9,7 +9,14 @@
 #include <QBluetoothDeviceInfo>
 #include <QBluetoothDeviceDiscoveryAgent>
 #include <QLowEnergyController>
+#include <QLowEnergyCharacteristicData>
+#include <QLowEnergyDescriptorData>
+#include <QLowEnergyServiceData>
 #include <QList>
+
+#include <glib.h>
+#include "actuators.h"
+#include "connectthread.h"
 
 
 class Lightbulb: public QObject
@@ -26,19 +33,24 @@ public:
 
     void searchForDevices();
     Q_INVOKABLE void connectToDevice(QString address);
+    Q_INVOKABLE void executeCommand(int param);
+    Q_INVOKABLE void connectToThread();
     void exploreCharacteristics(quint8 serviceIndex);
-<<<<<<< Updated upstream
-    void discoverServiceDetails();
-=======
+
     void discoverServiceDetails(QLowEnergyService::ServiceState servState);
+
+    ////Experimental
     void lightbulbDetails(QLowEnergyService::ServiceState servState);
->>>>>>> Stashed changes
+    void createObject(const QBluetoothUuid &uuid);
+    ////
 
     // functions associated with device state and control
     void getInitialState();
 
     // functions associated with device state and control Q_PROPERTY
     bool getOnOff();
+
+    ////Experimental
 
 public slots:
     void onOffCHarWritten(const QLowEnergyCharacteristic &info,
@@ -74,7 +86,12 @@ private:
     QLowEnergyController *connectionController = nullptr;
 
     QList <const QLowEnergyService *> Services;
+    QList <const QLowEnergyCharacteristic *> Characteristics;
+
     const QLowEnergyService *lightbulbService = nullptr;
+
+    QLowEnergyCharacteristic *cCharacteristic = nullptr;
+    QLowEnergyCharacteristic *nCharacteristic = nullptr;
 
 
 };
