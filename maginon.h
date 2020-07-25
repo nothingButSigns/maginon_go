@@ -1,19 +1,26 @@
 #ifndef MAGINON_H
 #define MAGINON_H
 
-//#include <qglobal.h>
-
 /*
  * Returns 4 bytes notification.
  * 1st byte:
  *  00 lightbulb off
  *  01 lightbulb on
- * 2nd byte:
+ * 2nd byte (when standard color):
  *  22 -> minimal brightness
  *  32
  *  62
  *  92
  *  b2 -> maximal brightness
+ * 3-5 bytes:
+ *  RGB color code
+ *
+ *  * 2nd byte (when rgb color):
+ *  20 -> minimal brightness
+ *  30
+ *  ...
+ *  90
+ *  a0 -> maximal brightness
  * 3-5 bytes:
  *  RGB color code
  */
@@ -45,3 +52,4 @@
 #endif // MAGINON_H
 
 
+//start time: 35.528068 (ON command)

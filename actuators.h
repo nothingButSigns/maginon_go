@@ -1,5 +1,5 @@
-#ifndef ACTUATORS_H_
-#define ACTUATORS_H_
+#ifndef ACTUATORS_H
+#define ACTUATORS_H
 
 
 #endif /* STEROWANIE_H_ */
@@ -7,7 +7,6 @@
 #pragma once
 
 #include <glib.h>
-#include "attrib/gattrib.h"
 
 //Żarówki
 #define HAND_LAMP 	0x0021
@@ -30,21 +29,37 @@
 #define WINDOW_MODE "14181e"
 
 
+enum state {
+    STATE_DISCONNECTED,
+    STATE_CONNECTING,
+    STATE_CONNECTED
+};
+
+//void setConnectionState(enum state connState);
+
+//class halfwayStruct: public QObject
+//{
+//public:
+//    void emitSignal() {
+//        emit stateConnected();
+//    }
+
+//Q_SIGNALS:
+//    void stateConnected();
+
+//}hfObj;
+
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-static GAttrib *attrib = NULL;
-static gboolean opt_listen = FALSE;
-static GMainLoop *event_loop;
-static gboolean got_error = FALSE;
-static GSourceFunc operation;
-static GIOChannel *chan = NULL;
 
 //void writeCharValue(const char* address, const char* value, int handler);
 void writeCharValue(const char* value, int handler);
-void connectToBulb();
-
+void connectToBulb(void *classPtr);
+void setConnectionState(void *callerPtr, enum state currentState);
 
 
 

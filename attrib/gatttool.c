@@ -48,7 +48,13 @@
 #include "gatttool.h"
 #include "actuators.h"
 
-
+static GAttrib *someAttr = NULL;
+static GAttrib *attrib = NULL;
+static gboolean opt_listen = FALSE;
+static GMainLoop *event_loop;
+static gboolean got_error = FALSE;
+static GSourceFunc operation;
+static GIOChannel *chan = NULL;
 
 
 static char *opt_src = NULL;
@@ -62,15 +68,8 @@ const char *opt_sec_level = "";
 int opt_handle = 0;
 static int opt_mtu = 0;
 static int opt_psm = 0;
+static void *callerPtr = NULL;
 
-
-GAttrib *someAttr = NULL;
-
-static enum state {
-    STATE_DISCONNECTED,
-    STATE_CONNECTING,
-    STATE_CONNECTED
-} conn_state;
 
 struct characteristic_data {
     GAttrib *attrib;
@@ -112,12 +111,6 @@ static void events_handler(const uint8_t *pdu, uint16_t len, gpointer user_data)
 
     if (olen > 0)
         g_attrib_send(attrib, 0, opdu, olen, NULL, NULL, NULL);
-}
-
-
-static void set_state(enum state st)
-{
-    conn_state = st;
 }
 
 static gboolean listen_start(gpointer user_data)
@@ -172,8 +165,7 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
     }
 
     g_print("COnnected");
-    set_state(STATE_CONNECTED);
-    //operation(attrib);
+    setConnectionState(callerPtr, STATE_CONNECTED);
 }
 
 
@@ -368,6 +360,7 @@ static void disconnect(GIOChannel *iochannel)
     g_io_channel_unref(iochannel);
     iochannel = NULL;
     printf("disconnected");
+    setConnectionState(callerPtr, STATE_DISCONNECTED);
 
 }
 
@@ -457,8 +450,9 @@ done:
 }
 
 
-void connectToBulb()
+void connectToBulb(void *classPtr)
 {
+    callerPtr = classPtr;
 
     GError *gerr = NULL;
     // parameters of communication
@@ -467,7 +461,7 @@ void connectToBulb()
 
     opt_dst = "80:30:DC:05:A9:96";
 
-
+    setConnectionState(callerPtr, STATE_CONNECTING);
     //operation = characteristics_write_req;
     chan = gatt_connect(opt_src, opt_dst, opt_dst_type, opt_sec_level,
                         opt_psm, opt_mtu, connect_cb, &gerr);

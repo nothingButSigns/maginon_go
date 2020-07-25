@@ -1,5 +1,4 @@
 #include "lightbulb.h"
-
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>

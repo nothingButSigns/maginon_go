@@ -16,7 +16,7 @@
 
 #include <glib.h>
 #include "actuators.h"
-#include "connectthread.h"
+#include "connectionthread.h"
 
 
 class Lightbulb: public QObject
@@ -30,9 +30,10 @@ public:
     ~Lightbulb();
 
     QVariant getDevices();
+    //state connectionState();
 
     void searchForDevices();
-    Q_INVOKABLE void connectToDevice(QString address);
+   // Q_INVOKABLE void connectToDevice(QString address);
     Q_INVOKABLE void executeCommand(int param);
     Q_INVOKABLE void connectToThread();
     void exploreCharacteristics(quint8 serviceIndex);
@@ -41,6 +42,7 @@ public:
 
     ////Experimental
     void lightbulbDetails(QLowEnergyService::ServiceState servState);
+
     void createObject(const QBluetoothUuid &uuid);
     ////
 
@@ -50,14 +52,16 @@ public:
     // functions associated with device state and control Q_PROPERTY
     bool getOnOff();
 
-    ////Experimental
-
+    ////Experimental slots
 public slots:
     void onOffCHarWritten(const QLowEnergyCharacteristic &info,
                           const QByteArray &value);
 
+
+
 Q_SIGNALS:
     void devicesDiscovered();
+    void connectionStateChanged();
 
     // signals associated with device state and control
     void onOffChanged();
@@ -74,12 +78,13 @@ private slots:
     void addService(const QBluetoothUuid &uuid);
     void serviceDiscoveryFinished();
     void connectionError();
+    void notifyState();
 
-
-
+    //friend void setConnectionState(state connState);
 
 
 private:
+    connectionThread *newConnection = nullptr;
     QList <QObject *> foundDevices;
     QBluetoothDeviceInfo connectedDevice;
     QBluetoothDeviceDiscoveryAgent *discoveryAgent = nullptr;

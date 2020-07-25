@@ -1,7 +1,5 @@
 #include "lightbulb.h"
 
-
-
 Lightbulb::Lightbulb()
 {
     discoveryAgent = new QBluetoothDeviceDiscoveryAgent(this);
@@ -33,6 +31,7 @@ QVariant Lightbulb::getDevices()
     return QVariant::fromValue(foundDevices);
 }
 
+
 void Lightbulb::searchForDevices()
 {
     foundDevices.clear();
@@ -41,39 +40,39 @@ void Lightbulb::searchForDevices()
 
 }
 
-void Lightbulb::connectToDevice(QString address)
-{
-    Device *lb = nullptr;
+//void Lightbulb::connectToDevice(QString address)
+//{
+//    Device *lb = nullptr;
 
-    for (auto i : foundDevices)
-    {
-        lb = qobject_cast<Device *>(i);
-        if(lb->getDevice().address().toString() == address)
-            break;
-    }
+//    for (auto i : foundDevices)
+//    {
+//        lb = qobject_cast<Device *>(i);
+//        if(lb->getDevice().address().toString() == address)
+//            break;
+//    }
 
-    if(connectionController)
-    {
-        connectionController->disconnectFromDevice();
-        delete connectionController;
-        connectionController = nullptr;
-    }
+//    if(connectionController)
+//    {
+//        connectionController->disconnectFromDevice();
+//        delete connectionController;
+//        connectionController = nullptr;
+//    }
 
-    connectedDevice = lb->getDevice();
+//    connectedDevice = lb->getDevice();
 
-    connectionController = QLowEnergyController::createCentral(connectedDevice);
-    connect(connectionController, &QLowEnergyController::connected, this, &Lightbulb::deviceConnected);
-    connect(connectionController, &QLowEnergyController::disconnected, this, &Lightbulb::deviceDisconnected);
-    connect(connectionController, &QLowEnergyController::serviceDiscovered, this, &Lightbulb::addService);
-    connect(connectionController, &QLowEnergyController::discoveryFinished, this, &Lightbulb::serviceDiscoveryFinished);
-    connect(connectionController, QOverload<QLowEnergyController::Error>::of(&QLowEnergyController::error),
-            this, &Lightbulb::connectionError);
+//    connectionController = QLowEnergyController::createCentral(connectedDevice);
+//    connect(connectionController, &QLowEnergyController::connected, this, &Lightbulb::deviceConnected);
+//    connect(connectionController, &QLowEnergyController::disconnected, this, &Lightbulb::deviceDisconnected);
+//    connect(connectionController, &QLowEnergyController::serviceDiscovered, this, &Lightbulb::addService);
+//    connect(connectionController, &QLowEnergyController::discoveryFinished, this, &Lightbulb::serviceDiscoveryFinished);
+//    connect(connectionController, QOverload<QLowEnergyController::Error>::of(&QLowEnergyController::error),
+//            this, &Lightbulb::connectionError);
 
-    connectionController->setRemoteAddressType(QLowEnergyController::RandomAddress);
+//    connectionController->setRemoteAddressType(QLowEnergyController::RandomAddress);
 
-    connectionController->connectToDevice();
+//    connectionController->connectToDevice();
 
-}
+//}
 
 void Lightbulb::executeCommand(int param)
 {
@@ -207,8 +206,11 @@ bool Lightbulb::getOnOff()
 
 void Lightbulb::connectToThread()
 {
-    connectThread *newThread = new connectThread();
-    newThread->start();
+
+
+    newConnection = new connectionThread();
+    connect(newConnection, &connectionThread::stateConnected, this, &Lightbulb::notifyState);
+    newConnection->start();
 
 }
 
@@ -321,5 +323,11 @@ void Lightbulb::connectionError()
 void Lightbulb::onOffCHarWritten(const QLowEnergyCharacteristic &info, const QByteArray &value)
 {
     qDebug() << "Value written";
+
+}
+
+void Lightbulb::notifyState()
+{
+    qDebug() << "notifyState: CONNECTED";
 
 }
