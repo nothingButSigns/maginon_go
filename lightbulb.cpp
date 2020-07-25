@@ -31,6 +31,11 @@ QVariant Lightbulb::getDevices()
     return QVariant::fromValue(foundDevices);
 }
 
+connectionThread *Lightbulb::connTh()
+{
+    return newConnection;
+}
+
 
 void Lightbulb::searchForDevices()
 {

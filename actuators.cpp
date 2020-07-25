@@ -7,4 +7,5 @@ void setConnectionState(void *callerPtr, state currentState)
 {
     connectionThread *cTh = static_cast<connectionThread *>(callerPtr);
     cTh->setConnectionState(currentState);
+    cTh->setRandomString("CONNECTED");
 }

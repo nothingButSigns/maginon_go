@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Controls 2.3
 
 Rectangle {
+    width: 640
+    height: 480
     color: "#2b5876"
     gradient: Gradient {
         GradientStop {
@@ -59,6 +61,38 @@ Rectangle {
             anchors.fill: parent
             anchors.centerIn: parent
             onClicked: Lightbulb.executeCommand(2)
+        }
+    }
+
+    Connections {
+        target: Lightbulb.connTh
+
+        onRandomStringChanged: {
+            statusText.text = Lightbulb.connTh.randomString
+            console.log("signal occured")
+        }
+
+    }
+
+    Rectangle {
+        height: 20
+        width: parent.width
+        color: "black"
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 0
+
+        Text {
+            id: statusText
+            height: parent.height
+            width: 100
+            color: "white"
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.right: parent.right
+            anchors.rightMargin: 0
+            text: qsTr("status bar")
         }
     }
 

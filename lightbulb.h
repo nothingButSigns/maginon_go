@@ -24,6 +24,7 @@ class Lightbulb: public QObject
     Q_OBJECT
     Q_PROPERTY(QVariant discoveredDevices READ getDevices NOTIFY devicesDiscovered)
     Q_PROPERTY(bool onOff READ getOnOff NOTIFY onOffChanged)
+    Q_PROPERTY(connectionThread *connTh READ connTh NOTIFY connectionThreadChanged)
 
 public:
     Lightbulb();
@@ -31,6 +32,7 @@ public:
 
     QVariant getDevices();
     //state connectionState();
+    connectionThread *connTh();
 
     void searchForDevices();
    // Q_INVOKABLE void connectToDevice(QString address);
@@ -62,6 +64,7 @@ public slots:
 Q_SIGNALS:
     void devicesDiscovered();
     void connectionStateChanged();
+    void connectionThreadChanged();
 
     // signals associated with device state and control
     void onOffChanged();

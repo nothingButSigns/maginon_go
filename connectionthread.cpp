@@ -5,6 +5,11 @@ state connectionThread::connectionState()
     return conn_state;
 }
 
+QString connectionThread::randomString()
+{
+    return rStr;
+}
+
 void connectionThread::setConnectionState(state currentState)
 {
     conn_state = currentState;
@@ -25,4 +30,10 @@ void connectionThread::setConnectionState(state currentState)
         default:
             break;
     }
+}
+
+void connectionThread::setRandomString(QString newString)
+{
+    rStr = newString;
+    emit randomStringChanged();
 }
