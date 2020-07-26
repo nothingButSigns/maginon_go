@@ -1,39 +1,46 @@
 #include "connectionthread.h"
+#include <string>
 
-state connectionThread::connectionState()
+ConnectionThread::ConnectionThread()
+{
+
+}
+
+ConnectionThread::ConnectionThread(QString devAddress)
+{
+    QByteArray toLatin = devAddress.toUtf8();
+    std::string var = toLatin.toStdString();
+    devStr = std::string(var);
+
+    dstAddress = devStr.c_str();
+}
+
+int ConnectionThread::intConnectionState()
 {
     return conn_state;
 }
 
-QString connectionThread::randomString()
+void ConnectionThread::setConnectionState(int currentState)
 {
-    return rStr;
-}
-
-void connectionThread::setConnectionState(state currentState)
-{
-    conn_state = currentState;
 
     switch (currentState) {
-        case STATE_CONNECTED: {
-            emit stateConnected();
-            break;
-        }
-        case STATE_CONNECTING: {
-            emit stateDisconnected();
-            break;
-        }
-        case STATE_DISCONNECTED: {
-            emit stateDisconnected();
-            break;
-        }
-        default:
-            break;
+    case state::STATE_CONNECTED: {
+        conn_state = connState::CONNECTED;
+        emit stateConnected(dstAddress);
+        break;
     }
-}
-
-void connectionThread::setRandomString(QString newString)
-{
-    rStr = newString;
-    emit randomStringChanged();
+    case state::STATE_CONNECTING: {
+        conn_state = connState::CONNECTING;
+        emit stateDisconnected();
+        break;
+    }
+    case state::STATE_DISCONNECTED: {
+        conn_state = connState::DISCONNECTED;
+        emit stateDisconnected();
+        break;
+    }
+    default:
+        break;
+    }
+    emit connectionStateChanged();
 }

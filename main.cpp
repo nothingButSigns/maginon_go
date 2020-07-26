@@ -1,4 +1,6 @@
 #include "lightbulb.h"
+#include "connectionthread.h"
+
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -10,6 +12,9 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     Lightbulb lb;
+
+    qmlRegisterType<ConnectionThread>("myLib", 1, 0, "ConnectionThread");
+    qmlRegisterType<Device>("currentDevice", 1, 0, "Device");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

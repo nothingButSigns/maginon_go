@@ -1,5 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.3
+import myLib 1.0
+import currentDevice 1.0
 
 Rectangle {
     width: 640
@@ -19,8 +21,8 @@ Rectangle {
     anchors.fill: parent
 
     FontLoader {
-       id: onOff
-       source: "on_off_sign"
+        id: onOff
+        source: "on_off_sign"
     }
 
     Text {
@@ -28,11 +30,14 @@ Rectangle {
         height: 80
         font.family: onOff.name
         font.pointSize: 40
+        color: "#808080"
         anchors.top: parent.top
         anchors.topMargin: 20
         anchors.left: parent.left
         anchors.leftMargin: 20
         text: "\ue800"
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
 
         MouseArea {
             width: parent.width
@@ -44,34 +49,33 @@ Rectangle {
         }
     }
 
-    Text {
-        width: 80
-        height: 80
-        font.family: onOff.name
-        font.pointSize: 40
-        anchors.top: parent.top
-        anchors.topMargin: 20
-        anchors.right: parent.right
-        anchors.rightMargin: 20
-        text: "\ue800"
-
-        MouseArea {
-            width: parent.width
-            height: parent.height
-            anchors.fill: parent
-            anchors.centerIn: parent
-            onClicked: Lightbulb.executeCommand(2)
-        }
-    }
 
     Connections {
         target: Lightbulb.connTh
 
-        onRandomStringChanged: {
-            statusText.text = Lightbulb.connTh.randomString
-            console.log("signal occured")
+        onConnectionStateChanged: {
+            if (Lightbulb.connTh.connectionState === ConnectionThread.CONNECTED)
+                statusText.text = "Connected"
+            else if (Lightbulb.connTh.connectionState === ConnectionThread.CONNECTING)
+                statusText.text = "Connecting"
+            else if (Lightbulb.connTh.connectionState === ConnectionThread.DISCONNECTED)
+                statusText.text = "Disconnected"
         }
+    }
 
+    Connections {
+        target: Lightbulb.currDev
+
+        onActionStateChanged: {
+            if (Lightbulb.currDev.actionState === Device.READ_ERROR)
+                statusText.text = "Cannot read current lightbulb state"
+            else if (Lightbulb.currDev.actionState === Device.WRITE_ERROR)
+                statusText.text = "Cannot send command to the lightbulb"
+            else if (Lightbulb.currDev.actionState === Device.WRITE_SUCCESS)
+                statusText.text = "Command sent"
+            else if (Lightbulb.currDev.actionState === Device.READ_SUCCESS)
+                statusText.text = "Got current state"
+        }
     }
 
     Rectangle {
@@ -90,9 +94,8 @@ Rectangle {
             color: "white"
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            text: qsTr("status bar")
+            anchors.centerIn: parent
+            text: qsTr("Status bar")
         }
     }
 
@@ -100,8 +103,4 @@ Rectangle {
 
 }
 
-/*##^##
-Designer {
-    D{i:0;autoSize:true;height:480;width:640}
-}
-##^##*/
+

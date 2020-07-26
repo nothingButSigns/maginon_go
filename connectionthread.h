@@ -5,36 +5,45 @@
 #include "actuators.h"
 
 
-class connectionThread: public QThread
+
+class ConnectionThread: public QThread
 {
     Q_OBJECT
-    Q_ENUM(state)
-    Q_PROPERTY(state connectionState READ connectionState WRITE setConnectionState NOTIFY connectionStateChanged)
-    Q_PROPERTY(QString randomString READ randomString WRITE setRandomString NOTIFY randomStringChanged)
+
+    Q_PROPERTY(int connectionState READ intConnectionState WRITE setConnectionState NOTIFY connectionStateChanged)
 
     void run() override {
-        connectToBulb(this);
+        connectToBulb(this, dstAddress);
     }
-
+//"80:30:DC:05:A9:96"
 public:
-    connectionThread(){};
 
-    state connectionState();
-    QString randomString();
-    void setConnectionState(state currentState);
-    void setRandomString(QString newString);
+
+    enum connState {
+        DISCONNECTED,
+        CONNECTING,
+        CONNECTED
+    };
+    Q_ENUM(connState)
+
+    ConnectionThread();
+    ConnectionThread(QString devAddress);;
+
+   // state connectionState();
+    int intConnectionState();
+    void setConnectionState(int currentState);
 
 Q_SIGNALS:
-    void stateConnected();
+    void stateConnected(QString(dstAddress));
     void stateConnecting();
     void stateDisconnected();
     void connectionStateChanged();
-    void randomStringChanged();
 
 
 private:
-    state conn_state;
-    QString rStr = "Random string";
+    connState conn_state;
+    std::string devStr = "";
+    const char* dstAddress = nullptr;
 };
 
 #endif // CONNECTTHREAD_H

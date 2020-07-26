@@ -56,19 +56,17 @@ static gboolean got_error = FALSE;
 static GSourceFunc operation;
 static GIOChannel *chan = NULL;
 
-
+static const char *opt_dst = NULL;
 static char *opt_src = NULL;
-const char *opt_dst = NULL;
 static char *opt_dst_type = "";
 const char *opt_value = "";
 const char *opt_sec_level = "";
-//static bt_uuid_t *opt_uuid = NULL;
-//static int opt_start = 0x0001;
-//static int opt_end = 0xffff;
+
 int opt_handle = 0;
 static int opt_mtu = 0;
 static int opt_psm = 0;
 static void *callerPtr = NULL;
+static uint8_t readStateValue[6];
 
 
 struct characteristic_data {
@@ -132,6 +130,8 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
     uint16_t cid;
     GError *gerr = NULL;
 
+    g_print("inside callback");
+
     if (err) {
         g_printerr("%s\n", err->message);
         got_error = TRUE;
@@ -159,9 +159,6 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
     if (opt_listen)
     {
         g_idle_add(listen_start, attrib);
-
-        printf("attrib in connected: %d", attrib);
-        printf("someAttr in connected: %d", attrib);
     }
 
     g_print("COnnected");
@@ -172,25 +169,29 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
 static void char_read_cb(guint8 status, const guint8 *pdu, guint16 plen,
                          gpointer user_data)
 {
-    uint8_t value[plen];
     ssize_t vlen;
     int i;
 
     if (status != 0) {
         g_printerr("Characteristic value/descriptor read failed: %s\n",
                    att_ecode2str(status));
+        setConnectionState(callerPtr, READ_ERROR);
         goto done;
     }
 
-    vlen = dec_read_resp(pdu, plen, value, sizeof(value));
+    vlen = dec_read_resp(pdu, plen, readStateValue, sizeof(readStateValue));
     if (vlen < 0) {
         g_printerr("Protocol error\n");
+        setConnectionState(callerPtr, READ_ERROR);
         goto done;
     }
     g_print("Characteristic value/descriptor: ");
+    setConnectionState(callerPtr, READ_SUCCESS);
     for (i = 0; i < vlen; i++)
-        g_print("%02x ", value[i]);
+        g_print("%x ", readStateValue[i]);
     g_print("\n");
+
+    sendStateData(callerPtr, &readStateValue);
 
 done:
     if (!opt_listen)
@@ -299,15 +300,18 @@ static void char_write_req_cb(guint8 status, const guint8 *pdu, guint16 plen,
     if (status != 0) {
         g_printerr("Characteristic Write Request failed: "
                    "%s\n", att_ecode2str(status));
+        setConnectionState(callerPtr, WRITE_ERROR);
         goto done;
     }
 
     if (!dec_write_resp(pdu, plen) && !dec_exec_write_resp(pdu, plen)) {
         g_printerr("Protocol error\n");
+        setConnectionState(callerPtr, WRITE_ERROR);
         goto done;
     }
 
     g_print("Characteristic value was written successfully\n");
+    setConnectionState(callerPtr, WRITE_SUCCESS);
 
 done:
     if (!opt_listen)
@@ -382,48 +386,12 @@ void interrupt_handler(sig_t i)
 }
 
 
-//void writeCharValue(const char* address, const char* value, int handler)
-//{
-//    GError *gerr = NULL;
-//    // parameters of communication
-//    opt_dst_type = g_strdup("public");
-//    opt_sec_level = g_strdup("low");
-
-//    opt_dst = address;
-//    opt_value = value;
-//    opt_handle = handler;
-
-//    operation = characteristics_write_req;
-//    chan = gatt_connect(opt_src, opt_dst, opt_dst_type, opt_sec_level,
-//                        opt_psm, opt_mtu, connect_cb, &gerr);
-
-
-//    if (chan == NULL)
-//    {
-//        g_printerr("%s\n", gerr->message);
-//        g_clear_error(&gerr);
-//        got_error = TRUE;
-//        goto done;
-//    }
-
-//    event_loop = g_main_loop_new(NULL, FALSE);
-//    g_main_loop_run(event_loop);
-//    g_main_loop_unref(event_loop);
-
-//    disconnect(chan);
-
-//done:
-//   // g_free(opt_uuid);
-//    g_free(opt_sec_level);
-
-//}
-
 void writeCharValue(const char* value, int handler)
 {
-    GError *gerr = NULL;
+   // GError *gerr = NULL;
     // parameters of communication
-    opt_dst_type = g_strdup("public");
-    opt_sec_level = g_strdup("low");
+   // opt_dst_type = g_strdup("public");
+   // opt_sec_level = g_strdup("low");
 
     opt_value = value;
     opt_handle = handler;
@@ -449,8 +417,32 @@ done:
 
 }
 
+void readCharValue(void *classPtr, int handler)
+{
 
-void connectToBulb(void *classPtr)
+    printf("reading cgar value");
+    callerPtr = classPtr;
+
+    GError *gerr = NULL;
+    opt_handle = handler;
+    operation = characteristics_read;
+
+    operation(someAttr);
+
+
+    event_loop = g_main_loop_new(NULL, FALSE);
+    g_main_loop_run(event_loop);
+    g_main_loop_unref(event_loop);
+
+
+done:
+   // g_free(opt_uuid);
+    g_free(opt_sec_level);
+
+}
+
+
+void connectToBulb(void *classPtr, const char* dstAddress)
 {
     callerPtr = classPtr;
 
@@ -459,10 +451,10 @@ void connectToBulb(void *classPtr)
     opt_dst_type = g_strdup("public");
     opt_sec_level = g_strdup("low");
 
-    opt_dst = "80:30:DC:05:A9:96";
+    opt_dst = dstAddress;
 
     setConnectionState(callerPtr, STATE_CONNECTING);
-    //operation = characteristics_write_req;
+
     chan = gatt_connect(opt_src, opt_dst, opt_dst_type, opt_sec_level,
                         opt_psm, opt_mtu, connect_cb, &gerr);
 

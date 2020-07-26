@@ -8,15 +8,12 @@
 #include <QAbstractListModel>
 #include <QBluetoothDeviceInfo>
 #include <QBluetoothDeviceDiscoveryAgent>
-#include <QLowEnergyController>
-#include <QLowEnergyCharacteristicData>
-#include <QLowEnergyDescriptorData>
-#include <QLowEnergyServiceData>
 #include <QList>
 
 #include <glib.h>
 #include "actuators.h"
 #include "connectionthread.h"
+#include "device.h"
 
 
 class Lightbulb: public QObject
@@ -24,7 +21,8 @@ class Lightbulb: public QObject
     Q_OBJECT
     Q_PROPERTY(QVariant discoveredDevices READ getDevices NOTIFY devicesDiscovered)
     Q_PROPERTY(bool onOff READ getOnOff NOTIFY onOffChanged)
-    Q_PROPERTY(connectionThread *connTh READ connTh NOTIFY connectionThreadChanged)
+    Q_PROPERTY(ConnectionThread *connTh READ connTh NOTIFY ConnectionThreadChanged)
+    Q_PROPERTY(Device *currDev READ currDev NOTIFY currentDeviceChanged)
 
 public:
     Lightbulb();
@@ -32,21 +30,13 @@ public:
 
     QVariant getDevices();
     //state connectionState();
-    connectionThread *connTh();
+    ConnectionThread *connTh();
+    Device *currDev();
 
     void searchForDevices();
-   // Q_INVOKABLE void connectToDevice(QString address);
     Q_INVOKABLE void executeCommand(int param);
-    Q_INVOKABLE void connectToThread();
-    void exploreCharacteristics(quint8 serviceIndex);
+    Q_INVOKABLE void connectToDevice(QString devAddress);
 
-    void discoverServiceDetails(QLowEnergyService::ServiceState servState);
-
-    ////Experimental
-    void lightbulbDetails(QLowEnergyService::ServiceState servState);
-
-    void createObject(const QBluetoothUuid &uuid);
-    ////
 
     // functions associated with device state and control
     void getInitialState();
@@ -54,17 +44,12 @@ public:
     // functions associated with device state and control Q_PROPERTY
     bool getOnOff();
 
-    ////Experimental slots
-public slots:
-    void onOffCHarWritten(const QLowEnergyCharacteristic &info,
-                          const QByteArray &value);
-
 
 
 Q_SIGNALS:
     void devicesDiscovered();
-    void connectionStateChanged();
-    void connectionThreadChanged();
+    void ConnectionThreadChanged();
+    void currentDeviceChanged();
 
     // signals associated with device state and control
     void onOffChanged();
@@ -76,31 +61,15 @@ private slots:
     void discoveryError();
 
     // slots associated with connection attempt
-    void deviceConnected();
-    void deviceDisconnected();
-    void addService(const QBluetoothUuid &uuid);
-    void serviceDiscoveryFinished();
     void connectionError();
-    void notifyState();
-
-    //friend void setConnectionState(state connState);
+    void stateConnected(QString connAddr);
 
 
 private:
-    connectionThread *newConnection = nullptr;
+    ConnectionThread *newConnection = nullptr;
     QList <QObject *> foundDevices;
-    QBluetoothDeviceInfo connectedDevice;
+    Device *currentConnection = nullptr;
     QBluetoothDeviceDiscoveryAgent *discoveryAgent = nullptr;
-    QLowEnergyController *connectionController = nullptr;
-
-    QList <const QLowEnergyService *> Services;
-    QList <const QLowEnergyCharacteristic *> Characteristics;
-
-    const QLowEnergyService *lightbulbService = nullptr;
-
-    QLowEnergyCharacteristic *cCharacteristic = nullptr;
-    QLowEnergyCharacteristic *nCharacteristic = nullptr;
-
 
 };
 
