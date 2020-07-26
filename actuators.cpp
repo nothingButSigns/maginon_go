@@ -1,0 +1,28 @@
+#include "actuators.h"
+#include "connectionthread.h"
+#include "device.h"
+
+void execute(const char* address, const char* value, int handler);
+
+void setConnectionState(void *callerPtr, state currentState)
+{
+    if(currentState == READ_ERROR || currentState == WRITE_ERROR)
+    {
+        Device *dev = static_cast<Device *>(callerPtr);
+        dev->setActionState(currentState);
+    }
+    else
+    {
+        ConnectionThread *cTh = static_cast<ConnectionThread *>(callerPtr);
+        cTh->setConnectionState(currentState);
+    }
+
+}
+
+void sendStateData(void *rcvPtr, void *data)
+{
+    Device *dev = static_cast<Device *>(rcvPtr);
+    uint8_t* stateData = static_cast<uint8_t*>(data);
+    dev->retriveStateData(stateData);
+
+}

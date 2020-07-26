@@ -48,7 +48,7 @@ Window {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        Lightbulb.connectToDevice(modelData.devAddress)
+                        Lightbulb.connectToDevice(modelData.bulbAddress)
                         viewLoader.source = "LightbulbMenu.qml"
 
                     }
