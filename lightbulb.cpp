@@ -40,7 +40,6 @@ Device *Lightbulb::currDev()
     return currentConnection;
 }
 
-
 void Lightbulb::searchForDevices()
 {
     foundDevices.clear();
@@ -64,11 +63,21 @@ void Lightbulb::executeCommand(int param)
 
 bool Lightbulb::getOnOff()
 {
-
+//do 30 roku zycia; bez p rz filh
 }
 
 void Lightbulb::connectToDevice(QString devAddress)
 {
+    for(auto dev : foundDevices)
+    {
+        Device *d = qobject_cast<Device *>(dev);
+        if(d->bulbAddress() == devAddress)
+        {
+            currentConnection = d;
+            break;
+        }
+    }
+
     newConnection = new ConnectionThread(devAddress);
     connect(newConnection, &ConnectionThread::stateConnected, this, &Lightbulb::stateConnected);
     newConnection->start();
@@ -88,7 +97,6 @@ void Lightbulb::addDevice(const QBluetoothDeviceInfo &device)
 void Lightbulb::discoveryFinished()
 {
 
-
 }
 
 void Lightbulb::discoveryCancelled()
@@ -102,28 +110,23 @@ void Lightbulb::discoveryError()
 
 }
 
+void Lightbulb::signalfromdevice()
+{
+    qDebug() << "device created";
+
+}
+
 void Lightbulb::connectionError()
 {
     qDebug() << "Connection error";
 
 }
 
-void Lightbulb::stateConnected(QString connAddr)
+void Lightbulb::stateConnected()
 {
-    qDebug() << "connAddr: " << connAddr;
-
-    for(auto dev : foundDevices)
-    {
-        Device *d = qobject_cast<Device *>(dev);
-        if(d->bulbAddress() == connAddr)
-        {
-            currentConnection = d;
-            break;
-        }
-    }
-
     if(currentConnection)
         currentConnection->getInitialState();
     else
-        qDebug() << "currentCOnnection == null";
+        qDebug() << "currentConnection == null";
+
 }

@@ -130,8 +130,6 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
     uint16_t cid;
     GError *gerr = NULL;
 
-    g_print("inside callback");
-
     if (err) {
         g_printerr("%s\n", err->message);
         got_error = TRUE;
@@ -161,7 +159,6 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
         g_idle_add(listen_start, attrib);
     }
 
-    g_print("COnnected");
     setConnectionState(callerPtr, STATE_CONNECTED);
 }
 
@@ -198,39 +195,6 @@ done:
         g_main_loop_quit(event_loop);
 }
 
-//static void char_read_by_uuid_cb(guint8 status, const guint8 *pdu,
-//                                 guint16 plen, gpointer user_data)
-//{
-//    struct att_data_list *list;
-//    int i;
-
-//    if (status != 0) {
-//        g_printerr("Read characteristics by UUID failed: %s\n",
-//                   att_ecode2str(status));
-//        goto done;
-//    }
-
-//    list = dec_read_by_type_resp(pdu, plen);
-//    if (list == NULL)
-//        goto done;
-
-//    for (i = 0; i < list->num; i++) {
-//        uint8_t *value = list->data[i];
-//        int j;
-
-//        g_print("handle: 0x%04x \t value: ", get_le16(value));
-//        value += 2;
-//        for (j = 0; j < list->len - 2; j++, value++)
-//            g_print("%02x ", *value);
-//        g_print("\n");
-//    }
-
-//    att_data_list_free(list);
-
-//done:
-//    g_main_loop_quit(event_loop);
-//}
-
 static gboolean characteristics_read(gpointer user_data)
 {
     GAttrib *attrib = user_data;
@@ -262,37 +226,6 @@ static void mainloop_quit(gpointer user_data)
     g_main_loop_quit(event_loop);
 }
 
-//static gboolean characteristics_write(gpointer user_data)
-//{
-//    GAttrib *attrib = user_data;
-//    uint8_t *value;
-//    size_t len;
-
-//    if (opt_handle <= 0) {
-//        g_printerr("A valid handle is required\n");
-//        goto error;
-//    }
-
-//    if (opt_value == NULL || opt_value[0] == '\0') {
-//        g_printerr("A value is required\n");
-//        goto error;
-//    }
-
-//    len = gatt_attr_data_from_string(opt_value, &value);
-//    if (len == 0) {
-//        g_printerr("Invalid value\n");
-//        goto error;
-//    }
-
-//    gatt_write_cmd(attrib, opt_handle, value, len, mainloop_quit, value);
-
-//    g_free(value);
-//    return FALSE;
-
-//error:
-//    g_main_loop_quit(event_loop);
-//    return FALSE;
-//}
 
 static void char_write_req_cb(guint8 status, const guint8 *pdu, guint16 plen,
                               gpointer user_data)
@@ -324,7 +257,7 @@ static gboolean characteristics_write_req(gpointer user_data)
     uint8_t *value;
     size_t len;
 
-    g_print("inside write char..");
+    g_print("\ninside write char..");
 
     if (opt_handle <= 0) {
         g_printerr("A valid handle is required\n");
@@ -388,11 +321,6 @@ void interrupt_handler(sig_t i)
 
 void writeCharValue(const char* value, int handler)
 {
-   // GError *gerr = NULL;
-    // parameters of communication
-   // opt_dst_type = g_strdup("public");
-   // opt_sec_level = g_strdup("low");
-
     opt_value = value;
     opt_handle = handler;
 
@@ -410,17 +338,14 @@ void writeCharValue(const char* value, int handler)
     g_main_loop_run(event_loop);
     g_main_loop_unref(event_loop);
 
-
-done:
-   // g_free(opt_uuid);
-    g_free(opt_sec_level);
-
+//    g_free(opt_value);
+//    g_free(opt_handle);
 }
 
 void readCharValue(void *classPtr, int handler)
 {
 
-    printf("reading cgar value");
+    printf("\nreading char value");
     callerPtr = classPtr;
 
     GError *gerr = NULL;
@@ -433,11 +358,6 @@ void readCharValue(void *classPtr, int handler)
     event_loop = g_main_loop_new(NULL, FALSE);
     g_main_loop_run(event_loop);
     g_main_loop_unref(event_loop);
-
-
-done:
-   // g_free(opt_uuid);
-    g_free(opt_sec_level);
 
 }
 

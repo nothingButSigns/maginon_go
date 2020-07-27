@@ -9,39 +9,37 @@
 class ConnectionThread: public QThread
 {
     Q_OBJECT
-
-    Q_PROPERTY(int connectionState READ intConnectionState WRITE setConnectionState NOTIFY connectionStateChanged)
+    Q_PROPERTY(int connectionState READ connectionState NOTIFY connectionStateChanged)
 
     void run() override {
         connectToBulb(this, dstAddress);
     }
-//"80:30:DC:05:A9:96"
+
 public:
 
 
-    enum connState {
+    enum _ConnectionState {
         DISCONNECTED,
         CONNECTING,
         CONNECTED
     };
-    Q_ENUM(connState)
+    Q_ENUM(_ConnectionState)
 
     ConnectionThread();
     ConnectionThread(QString devAddress);;
 
    // state connectionState();
-    int intConnectionState();
-    void setConnectionState(int currentState);
+    int connectionState();
+    void setConnectionState(state currentState);
 
 Q_SIGNALS:
-    void stateConnected(QString(dstAddress));
+    void stateConnected();
     void stateConnecting();
     void stateDisconnected();
     void connectionStateChanged();
 
-
 private:
-    connState conn_state;
+    _ConnectionState conn_state;
     std::string devStr = "";
     const char* dstAddress = nullptr;
 };

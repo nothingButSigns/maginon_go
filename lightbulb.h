@@ -15,16 +15,17 @@
 #include "connectionthread.h"
 #include "device.h"
 
-
 class Lightbulb: public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QVariant discoveredDevices READ getDevices NOTIFY devicesDiscovered)
     Q_PROPERTY(bool onOff READ getOnOff NOTIFY onOffChanged)
-    Q_PROPERTY(ConnectionThread *connTh READ connTh NOTIFY ConnectionThreadChanged)
-    Q_PROPERTY(Device *currDev READ currDev NOTIFY currentDeviceChanged)
+    Q_PROPERTY(ConnectionThread *connTh READ connTh NOTIFY connectionThreadChanged)
+    Q_PROPERTY(Device *currDev READ currDev NOTIFY CurrentDeviceChanged)
+    //Q_PROPERTY(int connectionState READ connectionState NOTIFY connectionStateChanged)
 
 public:
+
     Lightbulb();
     ~Lightbulb();
 
@@ -32,6 +33,7 @@ public:
     //state connectionState();
     ConnectionThread *connTh();
     Device *currDev();
+    int connectionState();
 
     void searchForDevices();
 
@@ -49,8 +51,9 @@ public:
 
 Q_SIGNALS:
     void devicesDiscovered();
-    void ConnectionThreadChanged();
-    void currentDeviceChanged();
+    void connectionThreadChanged();
+    void CurrentDeviceChanged();
+    void connectionStateChanged();
 
     // signals associated with device state and control
     void onOffChanged();
@@ -61,9 +64,11 @@ private slots:
     void discoveryCancelled();
     void discoveryError();
 
+    void signalfromdevice();
+
     // slots associated with connection attempt
     void connectionError();
-    void stateConnected(QString connAddr);
+    void stateConnected();
 
 
 private:

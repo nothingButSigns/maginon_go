@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.3
-import myLib 1.0
 import currentDevice 1.0
+import threadSignals 1.0
 
 Rectangle {
     width: 640
@@ -26,6 +26,7 @@ Rectangle {
     }
 
     Text {
+        id: onOffBulbIcon
         width: 80
         height: 80
         font.family: onOff.name
@@ -44,7 +45,7 @@ Rectangle {
             height: parent.height
             anchors.fill: parent
             anchors.centerIn: parent
-            onClicked: Lightbulb.executeCommand(1)
+            onClicked: Lightbulb.currDev.turnOnOff()
 
         }
     }
@@ -52,21 +53,25 @@ Rectangle {
 
     Connections {
         target: Lightbulb.connTh
-
         onConnectionStateChanged: {
-            if (Lightbulb.connTh.connectionState === ConnectionThread.CONNECTED)
+            console.log("conn state changed")
+            if (Lightbulb.connTh.connectionState === ThreadSignal.CONNECTED)
                 statusText.text = "Connected"
-            else if (Lightbulb.connTh.connectionState === ConnectionThread.CONNECTING)
+            else if (Lightbulb.connTh.connectionState === ThreadSignal.CONNECTING)
                 statusText.text = "Connecting"
-            else if (Lightbulb.connTh.connectionState === ConnectionThread.DISCONNECTED)
+            else if (Lightbulb.connTh.connectionState === ThreadSignal.DISCONNECTED)
                 statusText.text = "Disconnected"
         }
     }
+
 
     Connections {
         target: Lightbulb.currDev
 
         onActionStateChanged: {
+            console.log("action state changed")
+            console.log(Lightbulb.currDev.actionState)
+
             if (Lightbulb.currDev.actionState === Device.READ_ERROR)
                 statusText.text = "Cannot read current lightbulb state"
             else if (Lightbulb.currDev.actionState === Device.WRITE_ERROR)
@@ -74,9 +79,22 @@ Rectangle {
             else if (Lightbulb.currDev.actionState === Device.WRITE_SUCCESS)
                 statusText.text = "Command sent"
             else if (Lightbulb.currDev.actionState === Device.READ_SUCCESS)
+            {
                 statusText.text = "Got current state"
+                console.log("\n got current state")
+            }
+            else
+                statusText.text = "Unknown error occured"
+        }
+
+        onBulbStateChanged: {
+            if (Lightbulb.currDev.bulbState)
+                onOffBulbIcon.color = "#ffff00"
+            else
+                onOffBulbIcon.color = "#808080"
         }
     }
+
 
     Rectangle {
         height: 20

@@ -6,8 +6,10 @@ void execute(const char* address, const char* value, int handler);
 
 void setConnectionState(void *callerPtr, state currentState)
 {
-    if(currentState == READ_ERROR || currentState == WRITE_ERROR)
+    if(currentState == READ_ERROR || currentState == WRITE_ERROR
+            || currentState == READ_SUCCESS || currentState == WRITE_SUCCESS)
     {
+        qDebug() << "\n Setting device state..";
         Device *dev = static_cast<Device *>(callerPtr);
         dev->setActionState(currentState);
     }

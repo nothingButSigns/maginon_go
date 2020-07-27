@@ -7,6 +7,7 @@ Window {
     width: 640
     height: 480
     title: qsTr("Light manager")
+
     Rectangle {
         color: "#2b5876"
         gradient: Gradient {

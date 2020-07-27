@@ -15,27 +15,27 @@ ConnectionThread::ConnectionThread(QString devAddress)
     dstAddress = devStr.c_str();
 }
 
-int ConnectionThread::intConnectionState()
+int ConnectionThread::connectionState()
 {
     return conn_state;
 }
 
-void ConnectionThread::setConnectionState(int currentState)
+void ConnectionThread::setConnectionState(state currentState)
 {
 
     switch (currentState) {
     case state::STATE_CONNECTED: {
-        conn_state = connState::CONNECTED;
-        emit stateConnected(dstAddress);
+        conn_state = _ConnectionState::CONNECTED;
+        emit stateConnected();
         break;
     }
     case state::STATE_CONNECTING: {
-        conn_state = connState::CONNECTING;
+        conn_state = _ConnectionState::CONNECTING;
         emit stateDisconnected();
         break;
     }
     case state::STATE_DISCONNECTED: {
-        conn_state = connState::DISCONNECTED;
+        conn_state = _ConnectionState::DISCONNECTED;
         emit stateDisconnected();
         break;
     }
