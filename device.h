@@ -17,6 +17,7 @@ class Device: public QObject
     Q_PROPERTY(QString bulbAddress READ bulbAddress NOTIFY bulbAddressChanged)
     Q_PROPERTY(int actionState READ actionState NOTIFY actionStateChanged)
     Q_PROPERTY(bool bulbState READ bulbState NOTIFY bulbStateChanged)
+    Q_PROPERTY(quint8 luminosityVal READ luminosityVal NOTIFY luminosityValChanged)
 
 public:
 
@@ -59,6 +60,7 @@ public:
     Q_ENUM(_ActionState)
 
     Q_INVOKABLE void turnOnOff();
+    Q_INVOKABLE void changeLuminosity(quint8 newLum);
 
 
     Device() = default;
@@ -73,6 +75,7 @@ public:
     QString bulbAddress();
     int actionState();
     bool bulbState();
+    quint8 luminosityVal();
     void setActionState(int aState);
 
 Q_SIGNALS:
@@ -80,6 +83,7 @@ Q_SIGNALS:
     void bulbAddressChanged();
     void actionStateChanged();
     void bulbStateChanged();
+    void luminosityValChanged();
 
 
 private:

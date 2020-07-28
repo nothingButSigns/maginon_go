@@ -11,6 +11,19 @@ void Device::turnOnOff()
     getInitialState();
 }
 
+void Device::changeLuminosity(quint8 newLum)
+{
+    switch(newLum) {
+        case 1: writeCharValue(_MIN_LUM1, WRITE_HND); break;
+        case 2: writeCharValue(_LUM2, WRITE_HND); break;
+        case 3: writeCharValue(_LUM3, WRITE_HND); break;
+        case 4: writeCharValue(_LUM4, WRITE_HND); break;
+        case 5: writeCharValue(_MAX_LUM5, WRITE_HND); break;
+    }
+
+    getInitialState();
+}
+
 Device::Device(const QBluetoothDeviceInfo &d)
 {
     device = d;
@@ -111,6 +124,8 @@ void Device::retriveStateData(uint8_t *stateData)
         else
             qDebug() << "Luminosity data is invalid. Luminosity level cannot be retrieved";
 
+        emit luminosityValChanged();
+
 
     for (int i = 0; i<6; i++)
         qDebug() << "DATA: " << stateData[i];
@@ -136,6 +151,18 @@ int Device::actionState()
 bool Device::bulbState()
 {
     return BulbState;
+}
+
+quint8 Device::luminosityVal()
+{
+    switch (luminosity) {
+        case MIN_LUM: return 1;
+        case LUM1: return 2;
+        case LUM2: return 3;
+        case LUM3: return 4;
+        case MAX_LUM: return 5;
+        case UNKNOWN: return 6;
+    }
 }
 
 void Device::setActionState(int aState)

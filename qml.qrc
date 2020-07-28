@@ -2,6 +2,15 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>LightbulbMenu.qml</file>
-        <file alias="on_off_sign">icons/fontello.ttf</file>
+        <file>RGBMenu.qml</file>
+        <file>ControlPanel.qml</file>
+        <file>LuminositySlider.qml</file>
+        <file>LeftBackButton.qml</file>
+        <file>RightBackButton.qml</file>
+        <file>RightNavigator.qml</file>
+        <file>LeftNavigator.qml</file>
+        <file>RGBLuminositySlider.qml</file>
+        <file>ColorSlider.qml</file>
+        <file alias="light_icons">icons/light_icons.ttf</file>
     </qresource>
 </RCC>

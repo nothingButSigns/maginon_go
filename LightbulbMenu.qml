@@ -1,55 +1,91 @@
-import QtQuick 2.0
+import QtQuick 2.3
 import QtQuick.Controls 2.3
 import currentDevice 1.0
 import threadSignals 1.0
 
 Rectangle {
-    width: 640
-    height: 480
-    color: "#2b5876"
+    id: rectangle
+    width: 350
+    height: 470
+    color: "#213c21"
     gradient: Gradient {
         GradientStop {
             position: 0
-            color: "#2b5876"
+            color: "#213c21"
         }
 
         GradientStop {
+            position: 0.6
+            color: "#151916"
+        }
+
+
+        GradientStop {
             position: 1
-            color: "#4e4376"
+            color: "#000000"
         }
     }
     anchors.fill: parent
 
     FontLoader {
-        id: onOff
-        source: "on_off_sign"
+        id: lightIcons
+        source: "light_icons"
     }
 
     Text {
+
         id: onOffBulbIcon
-        width: 80
-        height: 80
-        font.family: onOff.name
-        font.pointSize: 40
+        font.family: lightIcons.name
+        font.pointSize: 50
         color: "#808080"
         anchors.top: parent.top
-        anchors.topMargin: 20
-        anchors.left: parent.left
-        anchors.leftMargin: 20
-        text: "\ue800"
+        anchors.topMargin: parent.height * 0.08
+        text: "\ue802"
+        anchors.horizontalCenter: parent.horizontalCenter
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
 
         MouseArea {
             width: parent.width
             height: parent.height
-            anchors.fill: parent
             anchors.centerIn: parent
             onClicked: Lightbulb.currDev.turnOnOff()
 
         }
     }
 
+    Text {
+
+        id: lightUp
+        font.family: lightIcons.name
+        font.pointSize: 20
+        color: "#808080"
+        anchors.top: parent.top
+        anchors.topMargin: luminositySlider.anchors.topMargin - luminositySlider.height * 1.3
+        text: "\ue803"
+        anchors.horizontalCenterOffset: parent.width /2.5
+        anchors.horizontalCenter: parent.horizontalCenter
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+
+    }
+
+    Text {
+
+        id: lightDown
+        font.family: lightIcons.name
+        font.pointSize: 20
+        color: "#808080"
+        anchors.top: parent.top
+        anchors.topMargin: luminositySlider.anchors.topMargin - luminositySlider.height * 1.3
+
+        text: "\ue801"
+        anchors.horizontalCenterOffset: - parent.width /2.5
+        anchors.horizontalCenter: parent.horizontalCenter
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+
+    }
 
     Connections {
         target: Lightbulb.connTh
@@ -88,37 +124,64 @@ Rectangle {
         }
 
         onBulbStateChanged: {
-            if (Lightbulb.currDev.bulbState)
+            if (Lightbulb.currDev.bulbState) {
+                luminositySlider.enabled = true
                 onOffBulbIcon.color = "#ffff00"
-            else
+            }
+            else {
+                luminositySlider.enabled = false
                 onOffBulbIcon.color = "#808080"
+            }
+        }
+
+        onLuminosityValChanged: {
+            if(Lightbulb.currDev.luminosityVal === Device.UNKNOWN)
+            {
+                luminositySlider.value = 1.0
+                luminositySlider.enabled = false
+            }
+            else
+            {
+                luminositySlider.value = Lightbulb.currDev.luminosityVal
+                luminositySlider.enabled = true
+            }
         }
     }
 
 
-    Rectangle {
-        height: 20
-        width: parent.width
-        color: "black"
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
 
-        Text {
-            id: statusText
-            height: parent.height
-            width: 100
-            color: "white"
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            anchors.centerIn: parent
-            text: qsTr("Status bar")
-        }
+
+    LuminositySlider {
+        id: luminositySlider
+        width: 260
+        height: 30
+        anchors.horizontalCenter: parent.horizontalCenter
+        bottomPadding: 6
+        topPadding: 6
+        anchors.top: parent.top
+        anchors.topMargin: parent.height * 0.48
+
+        stepSize: 1.0
+
+        from: 1.0
+        to: 5.0
+        value: 1
+
+        enabled: true
+        onValueChanged: Lightbulb.currDev.changeLuminosity(value)
     }
+
 
 
 
 }
 
 
+
+
+
+/*##^##
+Designer {
+    D{i:0;height:470;width:350}
+}
+##^##*/
