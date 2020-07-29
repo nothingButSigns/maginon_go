@@ -44,6 +44,19 @@ Window {
             }
         }
 
+        Connections {
+            target: Lightbulb
+
+            onDiscoveryFinished:
+                statusText.text = "Discovery finished"
+            onSearchingForDevices:
+                statusText.text = "Searching for devices..."
+            onDiscoveryCanceled:
+                statusText = "Discovery canceled"
+            onDiscoveryError:
+                statusText = "Discovery error"
+        }
+
 
 
         Grid {
@@ -74,7 +87,7 @@ Window {
                             if(Lightbulb.currDev)
                             {
                                 viewLoader.source = "ControlPanel.qml"
-                                    Lightbulb.connectToDevice(modelData.bulbAddress)
+                                Lightbulb.connectToDevice(modelData.bulbAddress)
                             }
                             else
                             {
@@ -82,8 +95,7 @@ Window {
                                 viewLoader.source = "ControlPanel.qml"
                             }
 
-                                //search.visible = false
-
+                            //statusBar.visible = false
                         }
                     }
 
@@ -120,6 +132,66 @@ Window {
             }
         }
 
+        Rectangle {
+            id: statusBar
+            height: 20
+            width: parent.width
+            color: "black"
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 0
+            anchors.left: parent.left
+            anchors.leftMargin: 0
+
+            Text {
+                id: statusText
+                height: parent.height
+                width: 100
+                color: "white"
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 0
+                anchors.centerIn: parent
+                text: qsTr("Status bar")
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignTop
+            }
+
+
+            Rectangle {
+                id: search
+                height: 45
+                width: parent.width / 4
+                color: "black"
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.top
+                anchors.bottomMargin: 0
+                visible: true
+
+
+                Text {
+                    id: searchIcon
+                    height: parent.height
+                    width: parent.width
+                    color: "white"
+                    font.family: lightIcons.name
+                    font.pointSize: 25
+                    anchors.top: parent.top
+                    anchors.topMargin: 0
+                    text: "\ue806"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    verticalAlignment: Text.AlignTop
+                    horizontalAlignment: Text.AlignHCenter
+
+                    MouseArea {
+                        width: parent.width
+                        height: parent.height
+                        anchors.centerIn: parent
+
+                        onClicked: Lightbulb.searchForDevices()
+                    }
+                }
+            }
+        }
+
     }
     Loader {
         id: viewLoader
@@ -128,55 +200,4 @@ Window {
         anchors.centerIn: parent
     }
 
-//    Rectangle {
-//        id: statusBar
-//        height: 20
-//        width: parent.width
-//        color: "black"
-//        anchors.bottom: parent.bottom
-//        anchors.bottomMargin: 0
-//        anchors.left: parent.left
-//        anchors.leftMargin: 0
-
-//        Text {
-//            id: statusText
-//            height: parent.height
-//            width: 100
-//            color: "white"
-//            anchors.bottom: parent.bottom
-//            anchors.bottomMargin: 0
-//            anchors.centerIn: parent
-//            text: qsTr("Status bar")
-//            horizontalAlignment: Text.AlignHCenter
-//            verticalAlignment: Text.AlignTop
-//        }
-
-
-//        Rectangle {
-//            id: search
-//            height: 45
-//            width: parent.width / 4
-//            color: "black"
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            anchors.bottom: parent.top
-//            anchors.bottomMargin: 0
-//            visible: true
-
-
-//            Text {
-//                id: searchIcon
-//                height: parent.height
-//                width: parent.width
-//                color: "white"
-//                font.family: lightIcons.name
-//                font.pointSize: 25
-//                anchors.top: parent.top
-//                anchors.topMargin: 0
-//                text: "\ue806"
-//                anchors.horizontalCenter: parent.horizontalCenter
-//                verticalAlignment: Text.AlignTop
-//                horizontalAlignment: Text.AlignHCenter
-//            }
-//        }
-//    }
 }

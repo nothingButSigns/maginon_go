@@ -24,6 +24,7 @@
  * 3-5 bytes:
  *  RGB color code
  */
+
 #define STATE_HND                   0x0024
 #define WRITE_HND                   0x0021
 #define CONTROL_CHARACTERISTICS     "{0000fff1-0000-1000-8000-00805f9b34fb}"
@@ -45,20 +46,20 @@
 #define _MIN_LUM1 	"aa0afc3a86010c01020b360d"
 
 // Light colors
-#define STANDARD      "aa0afc3a86010d060280808080806f200d"
-#define RGB           "aa0afc3a86010d0601808080808074240d"
-#define GREEN_1       "aa0afc3a86010d060124ff00808003560d"
-#define YELLOW_1      "aa0afc3a86010d0601ffe5008080d3e70d"
-#define YELLOW_2      "aa0afc3a86010d0601c5e1008080a0760d"
-#define MAGENTA       "aa0afc3a86010d0601e100c18080b5870d"
-#define WHITE         "aa0afc3a86010d0601ffffff808039660d"
-#define GREEN_2       "aa0afc3a86010d06010ce10080802c490d"
-#define OCHRE         "aa0afc3a86010d0601e18b008080912d0d"
-#define LIME          "aa0afc3a86010d0601e1d80080807c650d"
-#define AQUA          "aa0afc3a86010d060100c9e18080835d0d"
-#define BLUE          "aa0afc3a86010d06010700e18080c8e00d"
-#define PURPLE        "aa0afc3a86010d060115001e8080b81b0d"
-#define REDDISH       "aa0afc3a86010d06011e0100808067b60d"
+#define _STANDARD      "aa0afc3a86010d060280808080806f200d"
+#define _RGB           "aa0afc3a86010d0601808080808074240d"
+#define _GREEN_1       "aa0afc3a86010d060124ff00808003560d"
+#define _YELLOW_1      "aa0afc3a86010d0601ffe5008080d3e70d"
+#define _YELLOW_2      "aa0afc3a86010d0601c5e1008080a0760d"
+#define _MAGENTA       "aa0afc3a86010d0601e100c18080b5870d"
+#define _WHITE         "aa0afc3a86010d0601ffffff808039660d"
+#define _GREEN_2       "aa0afc3a86010d06010ce10080802c490d"
+#define _OCHRE         "aa0afc3a86010d0601e18b008080912d0d"
+#define _LIME          "aa0afc3a86010d0601e1d80080807c650d"
+#define _AQUA          "aa0afc3a86010d060100c9e18080835d0d"
+#define _BLUE          "aa0afc3a86010d06010700e18080c8e00d"
+#define _PURPLE        "aa0afc3a86010d060115001e8080b81b0d"
+#define _RED           "aa0afc3a86010d06011e0100808067b60d"
 
 // RGB light intensity
 #define _RMAX_LUM9   "aa0afc3a86010c010ae5180d"

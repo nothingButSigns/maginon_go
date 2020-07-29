@@ -24,7 +24,9 @@ Rectangle {
         target: Lightbulb.currDev
 
         onRgbEnabled: {
-            swipeView.currentIndex = 1
+            if(!Lightbulb.currDev.panelFrozen)
+                if(swipeView.currentIndex == 0)
+                    swipeView.currentIndex = 1
         }
     }
 

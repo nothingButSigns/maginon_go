@@ -7,6 +7,8 @@ Item {
     width: 70
     height: 350
 
+    property alias sliderId: rgbLuminositySlider
+
     Slider {
         id: rgbLuminositySlider
         width: 20
@@ -14,7 +16,8 @@ Item {
         //x: parent.width - width
 
         orientation: Qt.Vertical
-        snapMode: Slider.SnapOnRelease
+        snapMode: Slider.SnapAlways
+        live: false
         bottomPadding: 6
         topPadding: 6
 
@@ -56,8 +59,7 @@ Item {
         implicitHeight: 300
         width: parent.width - rgbLuminositySlider.width
         height: rgbLuminositySlider.availableHeight
-        radius: 8
-        color: "#f4f6f4"
+        color: "#000000"
 
 
         Rectangle {

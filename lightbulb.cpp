@@ -7,12 +7,12 @@ Lightbulb::Lightbulb()
     discoveryAgent->setLowEnergyDiscoveryTimeout(5000); //set how much time the scan will take
     connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::deviceDiscovered, this,
             &Lightbulb::addDevice);
-    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished, this,
-            &Lightbulb::discoveryFinished);
-    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::canceled, this,
-            &Lightbulb::discoveryCancelled);
+    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::finished,
+            [this]{emit discoveryFinished();});
+    connect(discoveryAgent, &QBluetoothDeviceDiscoveryAgent::canceled,
+            [this]{emit discoveryCanceled();});
     connect(discoveryAgent, QOverload<QBluetoothDeviceDiscoveryAgent::Error>::of(&QBluetoothDeviceDiscoveryAgent::error),
-            this, &Lightbulb::discoveryError);
+            [this]{emit discoveryError();});
 
 
 }
@@ -42,6 +42,7 @@ Device *Lightbulb::currDev()
 
 void Lightbulb::searchForDevices()
 {
+    emit searchingForDevices();
     foundDevices.clear();
     // Search only for Low Energy devices
     discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
@@ -98,28 +99,6 @@ void Lightbulb::addDevice(const QBluetoothDeviceInfo &device)
 
 }
 
-void Lightbulb::discoveryFinished()
-{
-
-}
-
-void Lightbulb::discoveryCancelled()
-{
-
-}
-
-void Lightbulb::discoveryError()
-{
-    qDebug() << "DiscoveryError";
-
-}
-
-void Lightbulb::signalfromdevice()
-{
-    qDebug() << "device created";
-
-}
-
 void Lightbulb::connectionError()
 {
     qDebug() << "Connection error";
@@ -128,6 +107,7 @@ void Lightbulb::connectionError()
 
 void Lightbulb::stateConnected()
 {
+    qDebug() << "Connected";
 
     if(currentConnection)
         currentConnection->getInitialState();

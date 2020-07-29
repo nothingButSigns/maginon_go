@@ -21,6 +21,10 @@ class Lightbulb: public QObject
     Q_PROPERTY(QVariant discoveredDevices READ getDevices NOTIFY devicesDiscovered)
     Q_PROPERTY(ConnectionThread *connTh READ connTh NOTIFY connectionThreadChanged)
     Q_PROPERTY(Device *currDev READ currDev NOTIFY CurrentDeviceChanged)
+    Q_PROPERTY(NOTIFY discoveryFinished)
+    Q_PROPERTY(NOTIFY searchingForDevices)
+    Q_PROPERTY(NOTIFY discoveryCancelled)
+    Q_PROPERTY(NOTIFY discoveryError)
 
 public:
 
@@ -32,7 +36,7 @@ public:
     Device *currDev();
     int connectionState();
 
-    void searchForDevices();
+    Q_INVOKABLE void searchForDevices();
 
     Q_INVOKABLE void executeCommand(int param);
     Q_INVOKABLE void connectToDevice(QString devAddress);
@@ -44,13 +48,15 @@ Q_SIGNALS:
     void CurrentDeviceChanged();
     void connectionStateChanged();
 
-private slots:
-    void addDevice(const QBluetoothDeviceInfo &device);
+    void searchingForDevices();
     void discoveryFinished();
-    void discoveryCancelled();
+    void discoveryCanceled();
     void discoveryError();
 
-    void signalfromdevice();
+
+private slots:
+    void addDevice(const QBluetoothDeviceInfo &device);
+    //void discoveryFinished();
 
     // slots associated with connection attempt
     void connectionError();

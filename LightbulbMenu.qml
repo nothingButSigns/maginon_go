@@ -50,15 +50,16 @@ Rectangle {
             height: parent.height
             anchors.centerIn: parent
             onClicked: {
-                if (!Lightbulb.currDev.bulbState)
+                if(!Lightbulb.currDev.bulbState && Lightbulb.currDev.rgbOn)
                 {
+                    Lightbulb.currDev.panelFrozen = true
                     Lightbulb.currDev.turnOnOff()
                     Lightbulb.currDev.switchToWhite()
+                    Lightbulb.currDev.panelFrozen = false
                 }
                 else
                     Lightbulb.currDev.turnOnOff()
             }
-
         }
     }
 
@@ -185,6 +186,7 @@ Rectangle {
         onValueChanged: {
             if(moved) {
                 enabled = false
+                moved = false
                 Lightbulb.currDev.changeLuminosity(value)
 
             }

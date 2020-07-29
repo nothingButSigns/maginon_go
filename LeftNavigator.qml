@@ -51,7 +51,7 @@ Item {
             color: "White"
             anchors.top: parent
             anchors.topMargin: 0
-            text: qsTr("White\ncolor")
+            text: qsTr("White\nlight")
             font.bold: true
             horizontalAlignment: Text.AlignHCenter
         }

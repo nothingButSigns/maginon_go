@@ -21,7 +21,7 @@ void Device::changeLuminosity(quint8 newLum)
         case 5: writeCharValue(_MAX_LUM5, WRITE_HND); break;
     }
 
-    // getInitialState();
+     getInitialState();
 }
 
 void Device::changeRGBLuminosity(quint8 newLum)
@@ -38,20 +38,42 @@ void Device::changeRGBLuminosity(quint8 newLum)
         case 9: writeCharValue(_RMAX_LUM9, WRITE_HND); break;
     }
 
+    getInitialState();
 }
 
 void Device::switchToRGB()
 {
-    writeCharValue(RGB, WRITE_HND);
+    writeCharValue(_RGB, WRITE_HND);
     rgbMode = true;
-    //getInitialState();
+    getInitialState();
 }
 
 void Device::switchToWhite()
 {
-    writeCharValue(STANDARD, WRITE_HND);
+    writeCharValue(_STANDARD, WRITE_HND);
     rgbMode = false;
-    //getInitialState();
+    getInitialState();
+}
+
+void Device::setRGBColor(quint8 colorIndex)
+{
+    switch (colorIndex) {
+        case 1: writeCharValue(_YELLOW_2, WRITE_HND); break;
+        case 2: writeCharValue(_PURPLE, WRITE_HND); break;
+        case 3: writeCharValue(_BLUE, WRITE_HND); break;
+        case 4: writeCharValue(_AQUA, WRITE_HND); break;
+        case 5: writeCharValue(_LIME, WRITE_HND); break;
+        case 6: writeCharValue(_OCHRE, WRITE_HND); break;
+        case 7: writeCharValue(_GREEN_2, WRITE_HND); break;
+        case 8: writeCharValue(_WHITE, WRITE_HND); break;
+        case 9: writeCharValue(_MAGENTA, WRITE_HND); break;
+        case 10: writeCharValue(_RED, WRITE_HND); break;
+        case 11: writeCharValue(_YELLOW_1, WRITE_HND); break;
+        case 12: writeCharValue(_GREEN_1, WRITE_HND); break;
+        case 13: writeCharValue(_RGB, WRITE_HND); break;
+    }
+
+    getInitialState();
 }
 
 Device::Device(const QBluetoothDeviceInfo &d)
@@ -81,6 +103,8 @@ void Device::getInitialState()
 
 void Device::retriveStateData(uint8_t *stateData)
 {
+    qDebug() << "retriveStateData";
+
     // get ON/OFF state info
     if(stateData[0] < static_cast<int>(OFF) || stateData[0] > static_cast<int>(ON))
         qDebug() << "Cannot determine whether the bulb is on or off";
@@ -90,14 +114,8 @@ void Device::retriveStateData(uint8_t *stateData)
         emit bulbStateChanged();
     }
 
-
-    // get color info
-    lightColor[0] = stateData[2];
-    lightColor[1] = stateData[3];
-    lightColor[2] = stateData[4];
-
         // check whether data is valid
-        if(stateData[1] > static_cast<int>(RLUM_MIN) && stateData[1] < static_cast<int>(MAX_LUM))
+        if(stateData[1] >= static_cast<int>(RLUM_MIN) && stateData[1] <= static_cast<int>(MAX_LUM))
         {
             quint8 rcvData = stateData[1];
             bool isValuePresent = true;
@@ -147,7 +165,35 @@ void Device::retriveStateData(uint8_t *stateData)
                     luminosity = UNKNOWN;
                     rgbMode = true;
                     emit rgbEnabled();
+
+
+                    colorValue = 0;
+                    colorValue += static_cast<quint8>(stateData[4]);
+                    colorValue += static_cast<quint8>(stateData[3]) * (1<<8);
+                    colorValue += static_cast<quint8>(stateData[2]) * (1<<16);
+
+                    colorSliderCode = [this]()->quint8{
+                        switch(colorValue) {
+                            case YELLOW_2: return 1; break;
+                            case PURPLE: return 2; break;
+                            case BLUE: return 3; break;
+                            case AQUA: return 4; break;
+                            case LIME: return 5; break;
+                            case OCHRE: return 6; break;
+                            case GREEN_2: return 7; break;
+                            case WHITE: return 8; break;
+                            case MAGENTA: return 9; break;
+                            case RED: return 10; break;
+                            case YELLOW_1: return 11; break;
+                            case GREEN_1: return 12; break;
+                            case REDDISH : return 13; break;
+                        }
+                    }();
+
+                    emit colorCodeChanged();
+
                     qDebug() << "Luminosity value for RGB light has been found";
+                    qDebug() << "COlor code: " << colorValue;
                 }
                 else
                     qDebug() << "Luminosity level cannot be retrieved";
@@ -200,6 +246,7 @@ quint8 Device::luminosityVal()
 
 quint8 Device::RGBLuminosityVal()
 {
+    qDebug() << "RGBLUminosityVal: " << luminosityRGB;
     switch (luminosityRGB) {
         case RLUM_MIN: return 1;
         case RLUM1: return 2;
@@ -217,6 +264,21 @@ quint8 Device::RGBLuminosityVal()
 bool Device::rgbOn()
 {
     return rgbMode;
+}
+
+bool Device::panelFrozen()
+{
+    return controlPanelFrozen;
+}
+
+void Device::setPanel(bool mode)
+{
+    controlPanelFrozen = mode;
+}
+
+quint8 Device::colorCode()
+{
+    return colorSliderCode;
 }
 
 void Device::setActionState(int aState)
@@ -240,5 +302,7 @@ void Device::setActionState(int aState)
             break;
         }
     }
+
     emit actionStateChanged();
+
 }

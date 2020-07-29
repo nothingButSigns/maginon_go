@@ -42,6 +42,7 @@ Rectangle {
             else if (Lightbulb.currDev.actionState === Device.WRITE_SUCCESS)
             {
                 luminositySlider.enabled = true
+                rgbSlider.enabled = true
                 statusText.text = "Command sent succesfully"
             }
             else if (Lightbulb.currDev.actionState === Device.READ_SUCCESS)
@@ -75,6 +76,10 @@ Rectangle {
                 luminositySlider.value = Lightbulb.currDev.RGBLuminosityVal
             }
         }
+
+        onColorCodeChanged: {
+            rgbSlider.sliderId.value = Lightbulb.currDev.colorCode
+        }
     }
 
     Text {
@@ -96,14 +101,13 @@ Rectangle {
             height: parent.height
             anchors.centerIn: parent
             onClicked: {
-                Lightbulb.currDev.turnOnOff()
-//                if (Lightbulb.currDev.rgbOn)
-//                    Lightbulb.currDev.turnOnOff()
-//                else
-//                {
-//                    Lightbulb.currDev.turnOnOff()
-//                    Lightbulb.currDev.switchToRGB()
-//                }
+                if (Lightbulb.currDev.rgbOn)
+                    Lightbulb.currDev.turnOnOff()
+                else
+                {
+                    Lightbulb.currDev.turnOnOff()
+                    Lightbulb.currDev.switchToRGB()
+                }
             }
         }
     }
@@ -131,7 +135,10 @@ Rectangle {
         onMoved: moved = true
         onValueChanged: {
             if(moved) {
+                console.log("RGB LUMINOSITY VALUE: ")
+                console.log(value)
                 enabled = false
+                moved = false
                 Lightbulb.currDev.changeRGBLuminosity(value)
             }
         }
@@ -175,14 +182,22 @@ Rectangle {
         id: rgbSlider
         anchors.right: parent.right
         anchors.rightMargin: 0
-
         anchors.top: parent.top
         anchors.topMargin: parent.height * 0.15
 
-
+        property bool moved: false
 
         enabled: true
-       // onValueChanged: Lightbulb.currDev.changeLuminosity(value)
+        sliderId.onMoved: moved = true
+        sliderId.onValueChanged: {
+            if(moved) {
+                enabled = false
+                moved = false
+                console.log("COLOR INDEX")
+                console.log(sliderId.value)
+                Lightbulb.currDev.setRGBColor(sliderId.value)
+            }
+        }
 
     }
 

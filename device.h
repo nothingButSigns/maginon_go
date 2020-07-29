@@ -18,8 +18,11 @@ class Device: public QObject
     Q_PROPERTY(int actionState READ actionState NOTIFY actionStateChanged)
     Q_PROPERTY(bool bulbState READ bulbState NOTIFY bulbStateChanged)
     Q_PROPERTY(quint8 luminosityVal READ luminosityVal NOTIFY luminosityValChanged)
-    Q_PROPERTY(quint8 RGBLuminosityVal READ RGBLuminosityVal)
+    Q_PROPERTY(quint8 RGBLuminosityVal READ RGBLuminosityVal NOTIFY rgbLuminosityValChanged)
     Q_PROPERTY(bool rgbOn READ rgbOn NOTIFY rgbEnabled)
+    Q_PROPERTY(bool panelFrozen READ panelFrozen WRITE setPanel)
+    Q_PROPERTY(quint8 colorCode READ colorCode NOTIFY colorCodeChanged)
+
 
 public:
 
@@ -61,11 +64,28 @@ public:
     };
     Q_ENUM(_ActionState)
 
+    enum _ColorCodes {
+        YELLOW_2 = 0xc5e100,
+        PURPLE = 0x15001e,
+        BLUE = 0x0700e1,
+        AQUA = 0x00c9e1,
+        LIME = 0xe1d800,
+        OCHRE = 0xe18b00,
+        GREEN_2 = 0x0ce100,
+        WHITE = 0xffffff,
+        MAGENTA = 0xe100c1,
+        RED = 0x1e0100,
+        YELLOW_1 = 0xffe500,
+        GREEN_1 = 0x24ff00,
+        REDDISH = 0xff0000,
+    };
+
     Q_INVOKABLE void turnOnOff();
     Q_INVOKABLE void changeLuminosity(quint8 newLum);
     Q_INVOKABLE void changeRGBLuminosity(quint8 newLum);
     Q_INVOKABLE void switchToRGB();
     Q_INVOKABLE void switchToWhite();
+    Q_INVOKABLE void setRGBColor(quint8 colorIndex);
 
 
     Device() = default;
@@ -83,6 +103,10 @@ public:
     quint8 luminosityVal();
     quint8 RGBLuminosityVal();
     bool rgbOn();
+    bool panelFrozen();
+    void setPanel(bool mode);
+    quint8 colorCode();
+
     void setActionState(int aState);
 
 Q_SIGNALS:
@@ -93,6 +117,7 @@ Q_SIGNALS:
     void luminosityValChanged();
     void rgbLuminosityValChanged();
     void rgbEnabled();
+    void colorCodeChanged();
 
 
 private:
@@ -103,9 +128,12 @@ private:
     _BulbState BulbState;
     Luminosity luminosity = UNKNOWN;
     LuminosityRGB luminosityRGB = R_UNKNOWN;
-    QByteArray lightColor;
+    quint32 colorValue;
+
 
     bool rgbMode = false;
+    bool controlPanelFrozen = false;
+    quint8 colorSliderCode;
 
 
 };
