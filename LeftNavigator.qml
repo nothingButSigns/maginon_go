@@ -2,7 +2,6 @@ import QtQuick 2.3
 import QtQuick.Controls 2.3
 import QtQuick.Shapes 1.11
 
-
 Item {
     id: leftNavigator
     width: parent.width
@@ -14,24 +13,24 @@ Item {
     visible: swipeView.currentIndex == 1 ? true : false
     
     Rectangle {
-        width: moveToRGB.width
+        width: moveToWhite.width
         height: width
         color: "black"
         radius: width/2
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: moveToRGB.height - height/2
+        anchors.bottomMargin: moveToWhite.height - height/2
         
     }
     Rectangle {
-        width: moveToRGB.width /2
+        width: moveToWhite.width /2
         height: width * 2
         color: "black"
         anchors.left: parent.left
         anchors.leftMargin: 0
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: moveToRGB.height - height/2
+        anchors.bottomMargin: moveToWhite.height - height/2
         
     }
     
@@ -62,7 +61,12 @@ Item {
             height: parent.height + parent.width / 2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
-            onClicked: swipeView.setCurrentIndex(0)
+            onClicked: {
+                if(Lightbulb.currDev.bulbState)
+                    Lightbulb.currDev.switchToWhite()
+
+                swipeView.setCurrentIndex(0)
+            }
         }
         
     }

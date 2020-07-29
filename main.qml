@@ -71,9 +71,19 @@ Window {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            Lightbulb.connectToDevice(modelData.bulbAddress)
-                            search.visible = false
-                            viewLoader.source = "ControlPanel.qml"
+                            if(Lightbulb.currDev)
+                            {
+                                viewLoader.source = "ControlPanel.qml"
+                                    Lightbulb.connectToDevice(modelData.bulbAddress)
+                            }
+                            else
+                            {
+                                Lightbulb.connectToDevice(modelData.bulbAddress)
+                                viewLoader.source = "ControlPanel.qml"
+                            }
+
+                                //search.visible = false
+
                         }
                     }
 
@@ -118,55 +128,55 @@ Window {
         anchors.centerIn: parent
     }
 
-    Rectangle {
-        id: statusBar
-        height: 20
-        width: parent.width
-        color: "black"
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-        anchors.left: parent.left
-        anchors.leftMargin: 0
+//    Rectangle {
+//        id: statusBar
+//        height: 20
+//        width: parent.width
+//        color: "black"
+//        anchors.bottom: parent.bottom
+//        anchors.bottomMargin: 0
+//        anchors.left: parent.left
+//        anchors.leftMargin: 0
 
-        Text {
-            id: statusText
-            height: parent.height
-            width: 100
-            color: "white"
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 0
-            anchors.centerIn: parent
-            text: qsTr("Status bar")
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignTop
-        }
-
-
-        Rectangle {
-            id: search
-            height: 45
-            width: parent.width / 4
-            color: "black"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: parent.top
-            anchors.bottomMargin: 0
-            visible: true
+//        Text {
+//            id: statusText
+//            height: parent.height
+//            width: 100
+//            color: "white"
+//            anchors.bottom: parent.bottom
+//            anchors.bottomMargin: 0
+//            anchors.centerIn: parent
+//            text: qsTr("Status bar")
+//            horizontalAlignment: Text.AlignHCenter
+//            verticalAlignment: Text.AlignTop
+//        }
 
 
-            Text {
-                id: searchIcon
-                height: parent.height
-                width: parent.width
-                color: "white"
-                font.family: lightIcons.name
-                font.pointSize: 25
-                anchors.top: parent.top
-                anchors.topMargin: 0
-                text: "\ue806"
-                anchors.horizontalCenter: parent.horizontalCenter
-                verticalAlignment: Text.AlignTop
-                horizontalAlignment: Text.AlignHCenter
-            }
-        }
-    }
+//        Rectangle {
+//            id: search
+//            height: 45
+//            width: parent.width / 4
+//            color: "black"
+//            anchors.horizontalCenter: parent.horizontalCenter
+//            anchors.bottom: parent.top
+//            anchors.bottomMargin: 0
+//            visible: true
+
+
+//            Text {
+//                id: searchIcon
+//                height: parent.height
+//                width: parent.width
+//                color: "white"
+//                font.family: lightIcons.name
+//                font.pointSize: 25
+//                anchors.top: parent.top
+//                anchors.topMargin: 0
+//                text: "\ue806"
+//                anchors.horizontalCenter: parent.horizontalCenter
+//                verticalAlignment: Text.AlignTop
+//                horizontalAlignment: Text.AlignHCenter
+//            }
+//        }
+//    }
 }

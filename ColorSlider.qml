@@ -62,104 +62,234 @@ Item {
 
         Rectangle {
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#ff0000"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#ff0000"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#24ff00"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#24ff00"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 2 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#ffe500"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#ffe500"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 3 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#1e0100"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#1e0100"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 4 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#e100c1"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#e100c1"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 5 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#ffffff"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#ffffff"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 6 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#0ce100"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#0ce100"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 7 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#e18b00"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#e18b00"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 8 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#e1d800"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#e1d800"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 9 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#00c9e1"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#00c9e1"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 10 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#0700e1"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#0700e1"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 11 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#15001e"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#15001e"
             border.width: 2
             border.color: "#000000"
         }
         Rectangle {
             y: 12 * parent.height / 13
             height: parent.height / 13
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#c5e100"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#000000"
+                }
+            }
             width: parent.width
-            color: "#c5e100"
             border.width: 2
             border.color: "#000000"
         }

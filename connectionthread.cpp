@@ -39,8 +39,18 @@ void ConnectionThread::setConnectionState(state currentState)
         emit stateDisconnected();
         break;
     }
+    case state::STATE_CONNECTION_ERROR: {
+        conn_state = _ConnectionState::CONNECTION_ERROR;
+        emit stateConnectionError();
+        break;
+    }
     default:
         break;
     }
     emit connectionStateChanged();
+}
+
+QString ConnectionThread::getAddress()
+{
+    return QString::fromStdString(devStr);
 }

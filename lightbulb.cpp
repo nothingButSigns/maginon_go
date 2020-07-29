@@ -61,13 +61,16 @@ void Lightbulb::executeCommand(int param)
 
 }
 
-bool Lightbulb::getOnOff()
-{
-//do 30 roku zycia; bez p rz filh
-}
-
 void Lightbulb::connectToDevice(QString devAddress)
 {
+
+    if(newConnection && (devAddress == newConnection->getAddress()))
+    {
+        currentConnection->getInitialState();
+        return;
+    }
+
+
     for(auto dev : foundDevices)
     {
         Device *d = qobject_cast<Device *>(dev);
@@ -80,6 +83,7 @@ void Lightbulb::connectToDevice(QString devAddress)
 
     newConnection = new ConnectionThread(devAddress);
     connect(newConnection, &ConnectionThread::stateConnected, this, &Lightbulb::stateConnected);
+    //connect(newConnection, &ConnectionThread::stateConnectionError, this, &Lightbulb::stateConnected);
     newConnection->start();
 }
 
@@ -124,6 +128,7 @@ void Lightbulb::connectionError()
 
 void Lightbulb::stateConnected()
 {
+
     if(currentConnection)
         currentConnection->getInitialState();
     else

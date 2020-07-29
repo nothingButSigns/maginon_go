@@ -18,6 +18,8 @@ class Device: public QObject
     Q_PROPERTY(int actionState READ actionState NOTIFY actionStateChanged)
     Q_PROPERTY(bool bulbState READ bulbState NOTIFY bulbStateChanged)
     Q_PROPERTY(quint8 luminosityVal READ luminosityVal NOTIFY luminosityValChanged)
+    Q_PROPERTY(quint8 RGBLuminosityVal READ RGBLuminosityVal)
+    Q_PROPERTY(bool rgbOn READ rgbOn NOTIFY rgbEnabled)
 
 public:
 
@@ -52,15 +54,18 @@ public:
     Q_ENUM(_BulbState)
 
     enum _ActionState {
-        WRITE_ERROR = 3,
-        READ_ERROR = 4,
-        WRITE_SUCCESS = 5,
-        READ_SUCCESS = 6
+        WRITE_ERROR = 4,
+        READ_ERROR = 5,
+        WRITE_SUCCESS = 6,
+        READ_SUCCESS = 7
     };
     Q_ENUM(_ActionState)
 
     Q_INVOKABLE void turnOnOff();
     Q_INVOKABLE void changeLuminosity(quint8 newLum);
+    Q_INVOKABLE void changeRGBLuminosity(quint8 newLum);
+    Q_INVOKABLE void switchToRGB();
+    Q_INVOKABLE void switchToWhite();
 
 
     Device() = default;
@@ -76,6 +81,8 @@ public:
     int actionState();
     bool bulbState();
     quint8 luminosityVal();
+    quint8 RGBLuminosityVal();
+    bool rgbOn();
     void setActionState(int aState);
 
 Q_SIGNALS:
@@ -84,6 +91,8 @@ Q_SIGNALS:
     void actionStateChanged();
     void bulbStateChanged();
     void luminosityValChanged();
+    void rgbLuminosityValChanged();
+    void rgbEnabled();
 
 
 private:
@@ -95,6 +104,8 @@ private:
     Luminosity luminosity = UNKNOWN;
     LuminosityRGB luminosityRGB = R_UNKNOWN;
     QByteArray lightColor;
+
+    bool rgbMode = false;
 
 
 };

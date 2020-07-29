@@ -1,5 +1,6 @@
 import QtQuick 2.3
 import QtQuick.Controls 2.3
+import currentDevice 1.0
 
 Rectangle {
     width: 350
@@ -29,6 +30,53 @@ Rectangle {
         source: "light_icons"
     }
 
+    Connections {
+        target: Lightbulb.currDev
+
+        onActionStateChanged: {
+
+            if (Lightbulb.currDev.actionState === Device.READ_ERROR)
+                statusText.text = "Cannot read current lightbulb state"
+            else if (Lightbulb.currDev.actionState === Device.WRITE_ERROR)
+                statusText.text = "Cannot send command to the lightbulb"
+            else if (Lightbulb.currDev.actionState === Device.WRITE_SUCCESS)
+            {
+                luminositySlider.enabled = true
+                statusText.text = "Command sent succesfully"
+            }
+            else if (Lightbulb.currDev.actionState === Device.READ_SUCCESS)
+            {
+                statusText.text = "Got current state"
+                console.log("\n got current state")
+            }
+            else
+                statusText.text = "Unknown error occured"
+        }
+
+        onBulbStateChanged: {
+            if (Lightbulb.currDev.bulbState) {
+                luminositySlider.enabled = true
+                onOffBulbIcon.color = "#ffff00"
+            }
+            else {
+                luminositySlider.enabled = false
+                onOffBulbIcon.color = "#808080"
+            }
+        }
+
+        onLuminosityValChanged: {
+            if(Lightbulb.currDev.RGBLuminosityVal === Device.R_UNKNOWN)
+            {
+                luminositySlider.enabled = false
+                statusText.text = "Unknown RGB luminosity value"
+            }
+            else
+            {
+                luminositySlider.value = Lightbulb.currDev.RGBLuminosityVal
+            }
+        }
+    }
+
     Text {
 
         id: onOffBulbIcon
@@ -47,8 +95,16 @@ Rectangle {
             width: parent.width
             height: parent.height
             anchors.centerIn: parent
-            onClicked: Lightbulb.currDev.turnOnOff()
-
+            onClicked: {
+                Lightbulb.currDev.turnOnOff()
+//                if (Lightbulb.currDev.rgbOn)
+//                    Lightbulb.currDev.turnOnOff()
+//                else
+//                {
+//                    Lightbulb.currDev.turnOnOff()
+//                    Lightbulb.currDev.switchToRGB()
+//                }
+            }
         }
     }
 
@@ -69,8 +125,16 @@ Rectangle {
         to: 9.0
         value: 1
 
+        property bool moved: false
+
         enabled: true
-        //onValueChanged: Lightbulb.currDev.changeLuminosity(value)
+        onMoved: moved = true
+        onValueChanged: {
+            if(moved) {
+                enabled = false
+                Lightbulb.currDev.changeRGBLuminosity(value)
+            }
+        }
     }
 
     Text {

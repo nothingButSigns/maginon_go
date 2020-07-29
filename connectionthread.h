@@ -21,21 +21,23 @@ public:
     enum _ConnectionState {
         DISCONNECTED,
         CONNECTING,
-        CONNECTED
+        CONNECTED,
+        CONNECTION_ERROR
     };
     Q_ENUM(_ConnectionState)
 
     ConnectionThread();
-    ConnectionThread(QString devAddress);;
+    ConnectionThread(QString devAddress);
 
-   // state connectionState();
     int connectionState();
     void setConnectionState(state currentState);
+    QString getAddress();
 
 Q_SIGNALS:
     void stateConnected();
     void stateConnecting();
     void stateDisconnected();
+    void stateConnectionError();
     void connectionStateChanged();
 
 private:

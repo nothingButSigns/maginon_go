@@ -1,7 +1,7 @@
 import QtQuick 2.3
 import QtQuick.Controls 2.3
 import QtQuick.Shapes 1.11
-
+import currentDevice 1.0
 
 Rectangle {
     width: 350
@@ -19,6 +19,14 @@ Rectangle {
         }
     }
     anchors.fill: parent
+
+    Connections {
+        target: Lightbulb.currDev
+
+        onRgbEnabled: {
+            swipeView.currentIndex = 1
+        }
+    }
 
     SwipeView {
         id: swipeView

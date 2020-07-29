@@ -2,7 +2,6 @@ import QtQuick 2.3
 import QtQuick.Controls 2.3
 import QtQuick.Shapes 1.11
 
-
 Item {
     id: rightNavigator
     width: parent.width
@@ -53,7 +52,12 @@ Item {
             height: parent.height + parent.width / 2
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
-            onClicked: swipeView.setCurrentIndex(1)
+            onClicked: {
+                if(Lightbulb.currDev.bulbState)
+                    Lightbulb.currDev.switchToRGB()
+
+                swipeView.setCurrentIndex(1)
+            }
         }
 
         Text {

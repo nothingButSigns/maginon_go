@@ -21,7 +21,37 @@ void Device::changeLuminosity(quint8 newLum)
         case 5: writeCharValue(_MAX_LUM5, WRITE_HND); break;
     }
 
-    getInitialState();
+    // getInitialState();
+}
+
+void Device::changeRGBLuminosity(quint8 newLum)
+{
+    switch(newLum) {
+        case 1: writeCharValue(_RMIN_LUM1, WRITE_HND); break;
+        case 2: writeCharValue(_RLUM2, WRITE_HND); break;
+        case 3: writeCharValue(_RLUM3, WRITE_HND); break;
+        case 4: writeCharValue(_RLUM4, WRITE_HND); break;
+        case 5: writeCharValue(_RLUM5, WRITE_HND); break;
+        case 6: writeCharValue(_RLUM6, WRITE_HND); break;
+        case 7: writeCharValue(_RLUM7, WRITE_HND); break;
+        case 8: writeCharValue(_RLUM8, WRITE_HND); break;
+        case 9: writeCharValue(_RMAX_LUM9, WRITE_HND); break;
+    }
+
+}
+
+void Device::switchToRGB()
+{
+    writeCharValue(RGB, WRITE_HND);
+    rgbMode = true;
+    //getInitialState();
+}
+
+void Device::switchToWhite()
+{
+    writeCharValue(STANDARD, WRITE_HND);
+    rgbMode = false;
+    //getInitialState();
 }
 
 Device::Device(const QBluetoothDeviceInfo &d)
@@ -88,6 +118,7 @@ void Device::retriveStateData(uint8_t *stateData)
             {
                 luminosity = static_cast<Luminosity>(rcvData);
                 luminosityRGB = R_UNKNOWN;
+                rgbMode = false;
                 qDebug() << "Luminosity value for white light has been found";
             }
             else
@@ -114,6 +145,8 @@ void Device::retriveStateData(uint8_t *stateData)
                 {
                     luminosityRGB = static_cast<LuminosityRGB>(rcvData);
                     luminosity = UNKNOWN;
+                    rgbMode = true;
+                    emit rgbEnabled();
                     qDebug() << "Luminosity value for RGB light has been found";
                 }
                 else
@@ -128,7 +161,7 @@ void Device::retriveStateData(uint8_t *stateData)
 
 
     for (int i = 0; i<6; i++)
-        qDebug() << "DATA: " << stateData[i];
+        qDebug() << "DATA: " << hex << stateData[i];
 }
 
 QString Device::bulbName()
@@ -163,6 +196,27 @@ quint8 Device::luminosityVal()
         case MAX_LUM: return 5;
         case UNKNOWN: return 6;
     }
+}
+
+quint8 Device::RGBLuminosityVal()
+{
+    switch (luminosityRGB) {
+        case RLUM_MIN: return 1;
+        case RLUM1: return 2;
+        case RLUM2: return 3;
+        case RLUM3: return 4;
+        case RLUM4: return 5;
+        case RLUM5: return 6;
+        case RLUM6: return 7;
+        case RLUM7: return 8;
+        case RLUM_MAX: return 9;
+        case R_UNKNOWN: return 10;
+    }
+}
+
+bool Device::rgbOn()
+{
+    return rgbMode;
 }
 
 void Device::setActionState(int aState)

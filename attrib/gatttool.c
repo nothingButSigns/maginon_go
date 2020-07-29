@@ -131,6 +131,7 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
     GError *gerr = NULL;
 
     if (err) {
+        setConnectionState(callerPtr, STATE_CONNECTION_ERROR);
         g_printerr("%s\n", err->message);
         got_error = TRUE;
         g_main_loop_quit(event_loop);
@@ -258,6 +259,7 @@ static gboolean characteristics_write_req(gpointer user_data)
     size_t len;
 
     g_print("\ninside write char..");
+    g_print("\n %s", opt_value);
 
     if (opt_handle <= 0) {
         g_printerr("A valid handle is required\n");
@@ -381,6 +383,7 @@ void connectToBulb(void *classPtr, const char* dstAddress)
 
     if (chan == NULL)
     {
+        setConnectionState(callerPtr, STATE_CONNECTION_ERROR);
         g_printerr("%s\n", gerr->message);
         g_clear_error(&gerr);
         got_error = TRUE;

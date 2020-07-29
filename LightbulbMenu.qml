@@ -49,7 +49,15 @@ Rectangle {
             width: parent.width
             height: parent.height
             anchors.centerIn: parent
-            onClicked: Lightbulb.currDev.turnOnOff()
+            onClicked: {
+                if (!Lightbulb.currDev.bulbState)
+                {
+                    Lightbulb.currDev.turnOnOff()
+                    Lightbulb.currDev.switchToWhite()
+                }
+                else
+                    Lightbulb.currDev.turnOnOff()
+            }
 
         }
     }
@@ -113,7 +121,10 @@ Rectangle {
             else if (Lightbulb.currDev.actionState === Device.WRITE_ERROR)
                 statusText.text = "Cannot send command to the lightbulb"
             else if (Lightbulb.currDev.actionState === Device.WRITE_SUCCESS)
-                statusText.text = "Command sent"
+            {
+                luminositySlider.enabled = true
+                statusText.text = "Command sent succesfully"
+            }
             else if (Lightbulb.currDev.actionState === Device.READ_SUCCESS)
             {
                 statusText.text = "Got current state"
@@ -137,15 +148,15 @@ Rectangle {
         onLuminosityValChanged: {
             if(Lightbulb.currDev.luminosityVal === Device.UNKNOWN)
             {
-                luminositySlider.value = 1.0
                 luminositySlider.enabled = false
+                statusText.text = "Unknown luminosity value"
             }
             else
             {
                 luminositySlider.value = Lightbulb.currDev.luminosityVal
-                luminositySlider.enabled = true
             }
         }
+
     }
 
 
@@ -167,8 +178,18 @@ Rectangle {
         to: 5.0
         value: 1
 
+        property bool moved: false
+
         enabled: true
-        onValueChanged: Lightbulb.currDev.changeLuminosity(value)
+        onMoved: moved = true
+        onValueChanged: {
+            if(moved) {
+                enabled = false
+                Lightbulb.currDev.changeLuminosity(value)
+
+            }
+        }
+        
     }
 
 

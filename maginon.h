@@ -46,7 +46,7 @@
 
 // Light colors
 #define STANDARD      "aa0afc3a86010d060280808080806f200d"
-#define RED           "aa0afc3a86010d0601808080808074240d"
+#define RGB           "aa0afc3a86010d0601808080808074240d"
 #define GREEN_1       "aa0afc3a86010d060124ff00808003560d"
 #define YELLOW_1      "aa0afc3a86010d0601ffe5008080d3e70d"
 #define YELLOW_2      "aa0afc3a86010d0601c5e1008080a0760d"
