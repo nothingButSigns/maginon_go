@@ -49,7 +49,7 @@ Item {
             width: parent.width
             height: 20
             color: "White"
-            anchors.top: parent
+            anchors.top: parent.top
             anchors.topMargin: 0
             text: qsTr("White\nlight")
             font.bold: true

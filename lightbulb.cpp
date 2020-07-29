@@ -13,8 +13,6 @@ Lightbulb::Lightbulb()
             [this]{emit discoveryCanceled();});
     connect(discoveryAgent, QOverload<QBluetoothDeviceDiscoveryAgent::Error>::of(&QBluetoothDeviceDiscoveryAgent::error),
             [this]{emit discoveryError();});
-
-
 }
 
 Lightbulb::~Lightbulb()
@@ -46,20 +44,6 @@ void Lightbulb::searchForDevices()
     foundDevices.clear();
     // Search only for Low Energy devices
     discoveryAgent->start(QBluetoothDeviceDiscoveryAgent::LowEnergyMethod);
-
-}
-
-void Lightbulb::executeCommand(int param)
-{
-    qDebug() << "inside executeCOmmand; PARAM = " << param;
-
-//    if(param == 1)
-//        writeCharValue(LUM2, HAND_LAMP);
-//    else if (param == 2)
-//        writeCharValue(MIN_LUM1, HAND_LAMP);
-
-
-
 }
 
 void Lightbulb::connectToDevice(QString devAddress)
@@ -67,7 +51,7 @@ void Lightbulb::connectToDevice(QString devAddress)
 
     if(newConnection && (devAddress == newConnection->getAddress()))
     {
-        currentConnection->getInitialState();
+        currentConnection->getCurrentState();
         return;
     }
 
@@ -99,18 +83,12 @@ void Lightbulb::addDevice(const QBluetoothDeviceInfo &device)
 
 }
 
-void Lightbulb::connectionError()
-{
-    qDebug() << "Connection error";
-
-}
-
 void Lightbulb::stateConnected()
 {
     qDebug() << "Connected";
 
     if(currentConnection)
-        currentConnection->getInitialState();
+        currentConnection->getCurrentState();
     else
         qDebug() << "currentConnection == null";
 

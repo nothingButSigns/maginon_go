@@ -3,17 +3,16 @@
 
 #include "device.h"
 #include "maginon.h"
+#include "actuators.h"
+#include "connectionthread.h"
 
 #include <QObject>
 #include <QAbstractListModel>
 #include <QBluetoothDeviceInfo>
 #include <QBluetoothDeviceDiscoveryAgent>
 #include <QList>
-
 #include <glib.h>
-#include "actuators.h"
-#include "connectionthread.h"
-#include "device.h"
+
 
 class Lightbulb: public QObject
 {
@@ -37,8 +36,6 @@ public:
     int connectionState();
 
     Q_INVOKABLE void searchForDevices();
-
-    Q_INVOKABLE void executeCommand(int param);
     Q_INVOKABLE void connectToDevice(QString devAddress);
 
 
@@ -56,12 +53,7 @@ Q_SIGNALS:
 
 private slots:
     void addDevice(const QBluetoothDeviceInfo &device);
-    //void discoveryFinished();
-
-    // slots associated with connection attempt
-    void connectionError();
     void stateConnected();
-
 
 private:
     ConnectionThread *newConnection = nullptr;

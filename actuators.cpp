@@ -2,8 +2,6 @@
 #include "connectionthread.h"
 #include "device.h"
 
-void execute(const char* address, const char* value, int handler);
-
 void setConnectionState(void *callerPtr, state currentState)
 {
     if(currentState == READ_ERROR || currentState == WRITE_ERROR
@@ -28,3 +26,4 @@ void sendStateData(void *rcvPtr, void *data)
     dev->retriveStateData(stateData);
 
 }
+

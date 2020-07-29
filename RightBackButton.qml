@@ -59,8 +59,6 @@ Item {
                 viewLoader.source = ""
                 viewLoader.source = "main.qml"
                 viewLoader.source = ""
-                
-                
             }
         }
     }

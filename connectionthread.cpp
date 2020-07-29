@@ -1,11 +1,6 @@
 #include "connectionthread.h"
 #include <string>
 
-ConnectionThread::ConnectionThread()
-{
-
-}
-
 ConnectionThread::ConnectionThread(QString devAddress)
 {
     QByteArray toLatin = devAddress.toUtf8();
@@ -53,4 +48,12 @@ void ConnectionThread::setConnectionState(state currentState)
 QString ConnectionThread::getAddress()
 {
     return QString::fromStdString(devStr);
+}
+
+void ConnectionThread::disconnect()
+{
+    initiateDisconnection();
+    delete dstAddress;
+    exit();
+    emit stateDisconnected();
 }

@@ -1,9 +1,10 @@
 #ifndef CONNECTTIONHREAD_H
 #define CONNECTTIONHREAD_H
-#include <QThread>
-#include <QObject>
+
 #include "actuators.h"
 
+#include <QThread>
+#include <QObject>
 
 
 class ConnectionThread: public QThread
@@ -26,12 +27,14 @@ public:
     };
     Q_ENUM(_ConnectionState)
 
-    ConnectionThread();
+    ConnectionThread() = default;
     ConnectionThread(QString devAddress);
 
     int connectionState();
     void setConnectionState(state currentState);
     QString getAddress();
+
+    void disconnect();
 
 Q_SIGNALS:
     void stateConnected();

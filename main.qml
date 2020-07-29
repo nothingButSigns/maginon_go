@@ -4,16 +4,14 @@ import QtQuick.Controls 2.0
 
 Window {
     id: window
-    width: 350
-    height: 470
     visible: true
     title: qsTr("Light manager")
 
     flags: {
-        setMaximumHeight(height)
-        setMaximumWidth(width)
-        setMinimumHeight(height)
-        setMinimumWidth(width)
+        setMaximumHeight(470)
+        setMaximumWidth(350)
+        setMinimumHeight(470)
+        setMinimumWidth(350)
     }
 
     FontLoader {
@@ -94,8 +92,6 @@ Window {
                                 Lightbulb.connectToDevice(modelData.bulbAddress)
                                 viewLoader.source = "ControlPanel.qml"
                             }
-
-                            //statusBar.visible = false
                         }
                     }
 
@@ -118,6 +114,7 @@ Window {
                     Text {
                         id: bulbAddress
                         text: "Device address:\n" + modelData.bulbAddress
+                        anchors.horizontalCenter: parent.horizontalCenter
                         width: parent.width
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
@@ -125,7 +122,6 @@ Window {
                         color: "#ffffff"
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: parent.height/5
-                        anchors.horizontalCenter: lightObject
                     }
                 }
 

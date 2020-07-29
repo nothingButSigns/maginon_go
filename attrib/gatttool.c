@@ -50,7 +50,6 @@
 
 static GAttrib *someAttr = NULL;
 static GAttrib *attrib = NULL;
-static gboolean opt_listen = FALSE;
 static GMainLoop *event_loop;
 static gboolean got_error = FALSE;
 static GSourceFunc operation;
@@ -111,17 +110,6 @@ static void events_handler(const uint8_t *pdu, uint16_t len, gpointer user_data)
         g_attrib_send(attrib, 0, opdu, olen, NULL, NULL, NULL);
 }
 
-static gboolean listen_start(gpointer user_data)
-{
-    GAttrib *attrib = user_data;
-
-    g_attrib_register(attrib, ATT_OP_HANDLE_NOTIFY, GATTRIB_ALL_HANDLES,
-                      events_handler, attrib, NULL);
-    g_attrib_register(attrib, ATT_OP_HANDLE_IND, GATTRIB_ALL_HANDLES,
-                      events_handler, attrib, NULL);
-
-    return FALSE;
-}
 
 static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
 {
@@ -153,12 +141,7 @@ static void connect_cb(GIOChannel *io, GError *err, gpointer user_data)
 
 
     attrib = g_attrib_new(io, mtu, false);
-
     someAttr = g_attrib_ref(attrib);
-    if (opt_listen)
-    {
-        g_idle_add(listen_start, attrib);
-    }
 
     setConnectionState(callerPtr, STATE_CONNECTED);
 }
@@ -192,24 +175,16 @@ static void char_read_cb(guint8 status, const guint8 *pdu, guint16 plen,
     sendStateData(callerPtr, &readStateValue);
 
 done:
-    if (!opt_listen)
-        g_main_loop_quit(event_loop);
+    g_main_loop_quit(event_loop);
 }
 
 static gboolean characteristics_read(gpointer user_data)
 {
     GAttrib *attrib = user_data;
 
-//    if (opt_uuid != NULL) {
-
-//        gatt_read_char_by_uuid(attrib, opt_start, opt_end, opt_uuid,
-//                               char_read_by_uuid_cb, NULL);
-
-//        return FALSE;
-//    }
-
     if (opt_handle <= 0) {
         g_printerr("A valid handle is required\n");
+        setConnectionState(callerPtr, READ_ERROR);
         g_main_loop_quit(event_loop);
         return FALSE;
     }
@@ -218,15 +193,6 @@ static gboolean characteristics_read(gpointer user_data)
 
     return FALSE;
 }
-
-static void mainloop_quit(gpointer user_data)
-{
-    uint8_t *value = user_data;
-
-    g_free(value);
-    g_main_loop_quit(event_loop);
-}
-
 
 static void char_write_req_cb(guint8 status, const guint8 *pdu, guint16 plen,
                               gpointer user_data)
@@ -248,8 +214,7 @@ static void char_write_req_cb(guint8 status, const guint8 *pdu, guint16 plen,
     setConnectionState(callerPtr, WRITE_SUCCESS);
 
 done:
-    if (!opt_listen)
-        g_main_loop_quit(event_loop);
+    g_main_loop_quit(event_loop);
 }
 
 static gboolean characteristics_write_req(gpointer user_data)
@@ -257,9 +222,6 @@ static gboolean characteristics_write_req(gpointer user_data)
     GAttrib *attrib = user_data;
     uint8_t *value;
     size_t len;
-
-    g_print("\ninside write char..");
-    g_print("\n %s", opt_value);
 
     if (opt_handle <= 0) {
         g_printerr("A valid handle is required\n");
@@ -292,7 +254,6 @@ error:
 
 static void disconnect(GIOChannel *iochannel)
 {
-
     opt_mtu = 0;
 
     g_io_channel_shutdown(iochannel, FALSE, NULL);
@@ -303,14 +264,26 @@ static void disconnect(GIOChannel *iochannel)
 
 }
 
+void initiateDisconnection()
+{
+    opt_mtu = 0;
+
+    g_io_channel_shutdown(chan, FALSE, NULL);
+    g_io_channel_unref(chan);
+    chan = NULL;
+    printf("disconnected");
+
+}
+
+
 void interrupt_handler(sig_t i)
 {
     printf("Program interrupted\n");
+    setConnectionState(callerPtr, STATE_DISCONNECTED);
     disconnect(chan);
 
     g_free(opt_src);
     g_free(opt_dst);
-   // g_free(opt_uuid);
     g_free(opt_sec_level);
 
     if (got_error)
@@ -327,12 +300,6 @@ void writeCharValue(const char* value, int handler)
     opt_handle = handler;
 
     operation = characteristics_write_req;
-
-    if(!someAttr)
-        printf("someAttr == null");
-    else
-        printf("someAttr ref: %d", someAttr);
-
     operation(someAttr);
 
 
@@ -340,14 +307,10 @@ void writeCharValue(const char* value, int handler)
     g_main_loop_run(event_loop);
     g_main_loop_unref(event_loop);
 
-//    g_free(opt_value);
-//    g_free(opt_handle);
 }
 
 void readCharValue(void *classPtr, int handler)
 {
-
-    printf("\nreading char value");
     callerPtr = classPtr;
 
     GError *gerr = NULL;
@@ -395,7 +358,6 @@ void connectToBulb(void *classPtr, const char* dstAddress)
     g_main_loop_unref(event_loop);
 
 done:
-   // g_free(opt_uuid);
     g_free(opt_sec_level);
 
 }

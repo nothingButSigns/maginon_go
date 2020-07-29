@@ -1,14 +1,14 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#include "actuators.h"
+#include "maginon.h"
+
 #include <QBluetoothDeviceInfo>
 #include <QBluetoothAddress>
 #include <QAbstractListModel>
 #include <QObject>
 #include <QDebug>
-
-#include "actuators.h"
-#include "maginon.h"
 
 class Device: public QObject
 {
@@ -93,7 +93,7 @@ public:
     Device(const Device &d);
     ~Device();
     QBluetoothDeviceInfo getDevice();
-    void getInitialState();
+    void getCurrentState();
     void retriveStateData(uint8_t* stateData);
 
     QString bulbName();
@@ -121,7 +121,7 @@ Q_SIGNALS:
 
 
 private:
-    QBluetoothDeviceInfo device;
+    QBluetoothDeviceInfo deviceInfo;
     Device *d;
 
     _ActionState ActionState;
